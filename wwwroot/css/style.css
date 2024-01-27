@@ -10012,3 +10012,30 @@ textarea.form-control {
   100% {
     stroke-dasharray: 89, 200;
     stroke-dashoffset: -136px; } }
+
+.table-product {
+    border: black 1px;
+    width: 100%;
+}
+.table-product th,
+.table-product td {
+    padding: 0.3rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+}
+.table-product th {
+    text-align: center;
+}
+
+.table-product td>input {
+    cursor: pointer;
+}
+
+.table-product-active {
+    background-color: #84bd369e;
+}
+
+.product-form {
+    width: 100%;
+    margin-top: 20px;
+}

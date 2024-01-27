@@ -6,4 +6,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.0" />
+    <PackageReference Include="MySqlConnector" Version="2.3.5" />
+  </ItemGroup>
+
 </Project>
