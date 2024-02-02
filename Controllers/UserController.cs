@@ -1,23 +1,25 @@
-﻿using Food.Common;
-using Food.Models;
+﻿using Food.Models;
 using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 
 namespace Food.Controllers
 {
     public class UserController : Controller
     {
-        private readonly FoodDBContext _dbContext;
         private readonly IConfiguration _config;
 
-        public UserController(FoodDBContext dBContext, IConfiguration configuration)
+        public UserController(IConfiguration configuration)
         {
-            _dbContext = dBContext;
             _config = configuration;
         }
         public IActionResult LoginPage()
         {
             return View("Login");
         }
+        [HttpGet]
+        [HttpPut]
+
+        [HttpPost]
         public ResponseModel Login(UserModel data)
         {
             ResponseModel response = new();
@@ -29,11 +31,43 @@ namespace Food.Controllers
                 return response;
             }
 
-            //string query = "select  `UserId`, `UserName`, `Password`, `Role`, `IsActive`, `IsDeleted`, `CreatedOn`, `FirstName`, `LastName`, `Gender`, `MobileNo`, `EmailId`, `Address`, `City`, `PinCode` from tbl_UserDetails where username = '" + data.UserName + "' and isdeleted = 0";
+            string query = "select * from tbl_UserDetails where username = '" + data.UserName + "' and isdeleted = 0";
 
-            //UserModel? user = CommonFunctions.ExecuteQuery<UserModel>(_config.GetConnectionString("DefaultConnection"), query);
+            MySqlConnection connection = new()
+            {
+                ConnectionString = _config.GetConnectionString("DefaultConnection")
+            };
+            connection.Open();
+            MySqlCommand command = new(query, connection);
+            MySqlDataReader reader = command.ExecuteReader();
 
-            var user = _dbContext.UserDetails.Where(a=> a.IsDeleted == false && a.UserName == data.UserName).FirstOrDefault();
+            UserModel? user = null;
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    user = new UserModel
+                    {
+                        UserId = reader.GetInt32("UserId"),
+                        UserName = reader.GetString("UserName"),
+                        Password = reader.GetString("Password"),
+                        Role = reader.GetString("Role"),
+                        IsActive = reader.GetBoolean("IsActive"),
+                        IsDeleted = reader.GetBoolean("IsDeleted"),
+                        CreatedOn = reader.GetDateTime("CreatedOn"),
+                        FirstName = reader["FirstName"]?.ToString(),
+                        LastName = reader["LastName"]?.ToString(),
+                        Gender = reader["Gender"]?.ToString(),
+                        MobileNo = reader["MobileNo"]?.ToString(),
+                        EmailId = reader["EmailId"]?.ToString(),
+                        Address = reader["Address"]?.ToString(),
+                        City = reader["City"]?.ToString(),
+                        PinCode = reader["PinCode"]?.ToString()
+                    };
+                }
+            }
+
+
             if (user == null)
             {
                 response.Status = "error";
@@ -52,7 +86,7 @@ namespace Food.Controllers
                 response.Message = "Login Successfully";
                 response.Data = new
                 {
-                    user = user,
+                    user,
                     Dashboard = user.Role == "Admin" ? "/Admin" : "/Home"
                 };
             }

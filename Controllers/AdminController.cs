@@ -1,32 +1,67 @@
 ﻿using Food.Models;
 using Microsoft.AspNetCore.Mvc;
+using MySql.Data.MySqlClient;
 
 namespace Food.Controllers
 {
     public class AdminController : Controller
     {
-        private readonly FoodDBContext _dbContext;
+        private readonly IConfiguration _config;
 
-        public AdminController(FoodDBContext dBContext)
+        public AdminController(IConfiguration configuration)
         {
-            _dbContext = dBContext;
+            _config = configuration;
         }
         [HttpGet]
         public IActionResult Index(string uaction, int? id = null)
         {
-            List<ProductModel> productList = _dbContext.Products.Where(a => a.IsDeleted == false).ToList();
-            if (id != null)
+            string query = "select * from tbl_Products where isdeleted = 0";
+
+            MySqlConnection connection = new()
             {
-                productList.ForEach(a =>
+                ConnectionString = _config.GetConnectionString("DefaultConnection")
+            };
+            connection.Open();
+            MySqlCommand command = new(query, connection);
+            MySqlDataReader reader = command.ExecuteReader();
+
+            List<ProductModel> productList = new();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
                 {
-                    a.IsActive = a.ProductId == id;
-                });
+                    ProductModel product = new()
+                    {
+                        ProductId = reader.GetInt32("ProductId"),
+                        ProductName = reader.GetString("ProductName"),
+                        Description = reader.GetString("Description"),
+                        MRPrice = reader.GetDecimal("MRPrice"),
+                        SalePrice = reader.GetDecimal("SalePrice"),
+                        CreatedBy = reader.GetInt32("CreatedBy"),
+                        CreatedOn = reader.GetDateTime("CreatedOn"),
+                        Images = reader["Images"] == null ? Array.Empty<byte>() : (byte[])reader["Images"],
+                        IsActive = reader.GetInt32("ProductId") == id
+                    };
+                    if (product.Images != null)
+                    {
+                        product.ImagesB64 = "data:image/jpg;base64," + Convert.ToBase64String(product.Images);
+                    }
+                    productList.Add(product);
+                }
             }
+
+            ProductModel? activeRow = productList.Where(a => a.IsActive).FirstOrDefault();
+            if (activeRow == null && productList.Count > 0)
+            {
+                productList[0].IsActive = true;
+                activeRow = productList[0];
+            }
+
             var data = new
             {
                 Products = productList,
-                CurrentProduct = uaction == "new" ? new ProductModel() : productList.Where(a => a.IsActive).FirstOrDefault(),
-                Action = uaction
+                CurrentProduct = uaction == "new" || productList == null || productList.Count == 0 ? new ProductModel() : activeRow,
+                Action = string.IsNullOrEmpty(uaction) ? "view" : uaction,
             };
             return View("Index", data);
         }
@@ -35,41 +70,78 @@ namespace Food.Controllers
         public IActionResult SaveProduct(ProductModel product)
         {
             ResponseModel response = new();
+
             if (product == null)
             {
                 response.Status = "error";
                 response.Message = "Product data Not Found!";
-            }
-            else if (product.ProductId > 0)
+                return Ok(response);
+            } else if (string.IsNullOrEmpty(product.ProductName))
             {
-                ProductModel? prod = _dbContext.Products.Where(a => a.ProductId == product.ProductId).FirstOrDefault();
-                if (prod != null)
+                response.Status = "error";
+                response.Message = "Please enter Product Name";
+                return Ok(response);
+            }
+            else if (string.IsNullOrEmpty(product.Description))
+            {
+                response.Status = "error";
+                response.Message = "Please enter Description";
+                return Ok(response);
+            }
+            else if (product.MRPrice == null || product.MRPrice <= 0)
+            {
+                response.Status = "error";
+                response.Message = "Please enter M.R.P.";
+                return Ok(response);
+            }
+            else if (product.SalePrice == null || product.SalePrice <= 0)
+            {
+                response.Status = "error";
+                response.Message = "Please enter SalePrice";
+                return Ok(response);
+            }
+            try
+            {
+                if (!string.IsNullOrEmpty(product.ImagesB64))
                 {
-                    prod.ProductName = product.ProductName;
-                    prod.SalePrice = product.SalePrice;
-                    prod.MRPrice = product.MRPrice;
-                    prod.Description = product.Description;
-
-                    _ = _dbContext.Products.Update(prod);
-                    _ = _dbContext.SaveChanges();
+                    product.Images = Convert.FromBase64String(product.ImagesB64.Split(",")[1]);
+                }
+                string query = "";
+                if (product.ProductId > 0)
+                {
+                    query = "UPDATE `tbl_products` SET `ProductName`=@ProductName, `Description`=@Description, `Images`=@Images, `MRPrice`=@MRPrice, `SalePrice`=@SalePrice, `CreatedBy`=@CreatedBy, `CreatedOn`=@CreatedOn,`IsDeleted`=@IsDeleted WHERE ProductId=" + product.ProductId.ToString();
                     response.Status = "success";
                     response.Message = "Updated Successfully";
-                    response.Data = prod;
+                    response.Data = product;
                 }
                 else
                 {
-                    response.Status = "error";
-                    response.Message = "Product Not Found!";
+                    product.CreatedOn = DateTime.Now;
+                    query = "INSERT INTO `tbl_products`(`ProductName`, `Description`, `Images`, `MRPrice`, `SalePrice`, `CreatedBy`, `CreatedOn`, `IsDeleted`) VALUES (@ProductName,@Description,@Images,@MRPrice,@SalePrice,@CreatedBy,@CreatedOn,@IsDeleted)";
+                    response.Status = "success";
+                    response.Message = "Added Successfully";
+                    response.Data = product;
                 }
+                MySqlConnection connection = new()
+                {
+                    ConnectionString = _config.GetConnectionString("DefaultConnection")
+                };
+                connection.Open();
+                MySqlCommand command = new(query, connection);
+                _ = command.Parameters.AddWithValue("@ProductName", product.ProductName);
+                _ = command.Parameters.AddWithValue("@Description", product.Description);
+                _ = command.Parameters.AddWithValue("@Images", product.Images);
+                _ = command.Parameters.AddWithValue("@MRPrice", product.MRPrice);
+                _ = command.Parameters.AddWithValue("@SalePrice", product.SalePrice);
+                _ = command.Parameters.AddWithValue("@CreatedBy", product.CreatedBy);
+                _ = command.Parameters.AddWithValue("@CreatedOn", product.CreatedOn);
+                _ = command.Parameters.AddWithValue("@IsDeleted", product.IsDeleted);
+                _ = command.ExecuteNonQuery();
             }
-            else
+            catch (Exception ex)
             {
-                product.CreatedOn = DateTime.Now;
-                _ = _dbContext.Products.Add(product);
-                _ = _dbContext.SaveChanges();
-                response.Status = "success";
-                response.Message = "Added Successfully";
-                response.Data = product;
+                response.Status = "error";
+                response.Message = ex.Message + "_" +(ex.InnerException?.Message ?? "");
             }
             return Ok(response);
         }

@@ -6,8 +6,8 @@ namespace Food.Models
     {
         public int ProductId { get; set; }
         public string ProductName { get; set; }
-        public string Description { get; set; }
-        public string Images { get; set; }
+        public string Description { get; set; }        
+        public byte[] Images { get; set; }
         public decimal MRPrice { get; set; }
         public decimal SalePrice { get; set; }
         public int CreatedBy { get; set; }
@@ -16,5 +16,7 @@ namespace Food.Models
 
         [NotMapped]
         public bool IsActive { get; set; }
+        [NotMapped]
+        public string ImagesB64 { get; set; }
     }
 }

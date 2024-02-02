@@ -1,3 +1,15 @@
 ﻿@{
     Layout = "_Layout";
 }
+
+
+<div id="alertbox" class="food-alert-box">
+    <span class="food-alert-closebtn" onclick="hideMsg()">&times;</span>
+    <span id="alertbox-msg"></span>
+</div>
+<!-- The Modal -->
+<div id="ImgModal" class="img-modal">
+    <span class="img-modal-close" onclick="this.parentElement.style.display = 'none';">&times;</span>
+    <img class="img-modal-content" id="ImgModalImg">
+    <div id="ImgModalcaption" class="img-modal-caption"></div>
+</div>

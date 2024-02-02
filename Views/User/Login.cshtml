@@ -34,7 +34,7 @@
                             <input type="password" title="Password" value="Pass@123" name="password" id="password" class="form-control" placeholder="Password" />
                         </div>
                         <div class="form-group">
-                            <input type="submit" onclick="submitlogin()" value="Login" class="btn btn-primary py-3 px-5">
+                            <input type="submit" onclick="submitlogin()" value="Login" class="btn btn-success py-3 px-5">
                         </div>
                     </div>
                 </div>
@@ -42,6 +42,8 @@
         </div>
     </div>
 </section>
+
+<div id="msg"></div>
 
 <script>
     window.onload = function () {
@@ -56,18 +58,19 @@
         $.post("/User/Login", { data: data })
             .done(function (res) {
                 if (res?.status == "success") {
-                    alert(res.message);
+                    showSuccessMsg(res.message);
                     localStorage.setItem("UserInfo", JSON.stringify(res.data.user));
+                    setTimeout(function () {
                         window.location.href = res.data.dashboard;
-                    //@Html.ActionLink("Home", "Index", "Home")
-                } else if (res?.status == "fail") {
-                    alert(res.message);
+                    }, 1000);
+                } else if (res?.status) {
+                    showErrorMsg(res.message);
                 } else {
-                    alert("error");
+                    showErrorMsg("error");
                 }
             })
             .fail(function () {
-                alert("error");
+                showErrorMsg("error");
             });
     }
 </script>

@@ -1,4 +1,6 @@
+DROP TABLE IF EXISTS `tbl_Products`;
 DROP TABLE IF EXISTS `tbl_userdetails`;
+
 
 CREATE TABLE tbl_UserDetails(
     UserId INT NOT NULL AUTO_INCREMENT,
@@ -19,17 +21,17 @@ CREATE TABLE tbl_UserDetails(
 	PRIMARY KEY(UserId),
 	UNIQUE(UserName)
 );
+ALTER TABLE tbl_userdetails AUTO_INCREMENT=1;
 
 INSERT INTO `tbl_userdetails`(`UserName`, `Password`, `Role`, `IsActive`, `IsDeleted`, `CreatedOn`, `FirstName`)
-VALUES ('Admin','Pass@123','Admin',1,0,'2024-01-26','Admin');
+VALUES ('Admin','Pass@123','Admin',1,0,CURDATE(),'Admin');
 
-DROP TABLE IF EXISTS `tbl_Products`;
 
 CREATE TABLE tbl_Products(
     ProductId INT NOT NULL AUTO_INCREMENT,
     ProductName VARCHAR(1000) NOT NULL,
     Description VARCHAR(5000),
-    Images VARCHAR(5000),
+    Images LONGBLOB,
     MRPrice DECIMAL(10, 2) DEFAULT 0,
     SalePrice DECIMAL(10, 2) DEFAULT 0,
     CreatedBy INT NOT NULL,
@@ -38,3 +40,5 @@ CREATE TABLE tbl_Products(
 	PRIMARY KEY(ProductId),
 	FOREIGN KEY (CreatedBy) REFERENCES tbl_UserDetails(UserId)
 );
+
+ALTER TABLE tbl_Products AUTO_INCREMENT=1;

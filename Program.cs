@@ -1,14 +1,7 @@
-using Food;
-using Microsoft.EntityFrameworkCore;
-
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? "";
-
-builder.Services.AddDbContext<FoodDBContext>(x => x.UseMySQL(connectionString));
 
 WebApplication app = builder.Build();
 
