@@ -53,18 +53,22 @@
                             <div class="form-group col-md-6">
                                 <div class="row">
                                     <div class="form-group col-md-12">
-                                        <span style="color:black;">M.R.P.</span>@Model.CurrentProduct?.MRPrice
+                                        <span style="color:black;">M.R.P.</span>
                                         <input type="number" @(@Model.Action == "view" ? "disabled" : "") title="MRP" value="@Model.CurrentProduct?.MRPrice" name="mrp" id="mrp" class="form-control" placeholder="Enter M.R.P." />
                                     </div>
                                     <div class="form-group col-md-12">
                                         <span style="color:black;">Sale Price</span>
                                         <input type="number" @(@Model.Action == "view" ? "disabled" : "") title="Sale Price" value="@Model.CurrentProduct?.SalePrice" name="saleprice" id="saleprice" class="form-control" placeholder="Enter Sale Price" />
                                     </div>
+                                    <div class="form-group col-md-12">
+                                        <span style="color:black;">Discount</span>
+                                        <input type="number" @(@Model.Action == "view" ? "disabled" : "") title="Discount" value="@Model.CurrentProduct?.DiscountPercent" name="discount" id="discount" class="form-control" placeholder="Enter Discount Percentage" />
+                                    </div>
                                 </div>
                             </div>
                             @* @if (!string.IsNullOrEmpty(@Model.CurrentProduct?.ImagesB64))
                             { *@
-                                <img class="form-group col-md-6 img-modal-img" onclick="showImageInModal('product-image')" id="product-image" alt="@(@Model.CurrentProduct?.ProductName)" width="120" height="120" src="@Model.CurrentProduct?.ImagesB64" />
+                                <img class="form-group col-md-6 img-modal-img" onclick="showImageInModal('product-image')" id="product-image" alt="@(@Model.CurrentProduct?.ProductName)" width="120" src="@Model.CurrentProduct?.ImagesB64" />
                             @* } *@
                             <div class="form-group col-md-12" @(@Model.Action == "view" ? "hidden" : "")>
                                 <span style="color:black;">Upload Image</span><br />
@@ -121,6 +125,7 @@
             Description: $('#description').val(),
             MRPrice: $('#mrp').val(),
             SalePrice: $('#saleprice').val(),
+            DiscountPercent: $('#discount').val(),
             IsDeleted: action == 'delete',
             IsActive: false
         };

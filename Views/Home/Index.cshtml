@@ -144,29 +144,31 @@
     </div>
     <div class="container">
         <div class="row">
+            @for (int i = 0; i < Model.productList.Count; i++)
+            {
             <div class="col-md-6 col-lg-3 ftco-animate">
                 <div class="product">
                     <a href="#" class="img-prod">
-                        <img class="img-fluid" src="images/product-1.jpg" alt="Colorlib Template">
-                        <span class="status">30%</span>
+                            <img class="img-fluid" src="@Model.productList[i]?.ImagesB64" alt="@Model.productList[i]?.ProductName">
+                            <span class="status" @(@Model.productList[i]?.DiscountPercent > 0 ? "" : "hidden")>@Math.Round(Model.productList[i]?.DiscountPercent, 2).ToString("G29") %</span>
                         <div class="overlay"></div>
                     </a>
                     <div class="text py-3 pb-4 px-3 text-center">
-                        <h3><a href="#">Bell Pepper</a></h3>
+                            <h3><a href="#">@Model.productList[i].ProductName</a></h3>
                         <div class="d-flex">
                             <div class="pricing">
-                                <p class="price"><span class="mr-2 price-dc">$120.00</span><span class="price-sale">$80.00</span></p>
+                                    <p class="price"><span class="mr-2 price-dc" @(@Model.productList[i]?.MRPrice == @Model.productList[i]?.SalePrice ? "hidden" : "")>@Model.productList[i]?.MRPrice ₹</span><span class="price-sale">@Model.productList[i]?.SalePrice ₹</span></p>
                             </div>
                         </div>
                         <div class="bottom-area d-flex px-3">
                             <div class="m-auto d-flex">
-                                <a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center">
+                                    <a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center" title="View More">
                                     <span><i class="ion-ios-menu"></i></span>
                                 </a>
-                                <a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1">
+                                    <a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1" title="Add To Kart">
                                     <span><i class="ion-ios-cart"></i></span>
                                 </a>
-                                <a href="#" class="heart d-flex justify-content-center align-items-center ">
+                                <a href="#" class="heart d-flex justify-content-center align-items-center " title="Add To Favorite">
                                     <span><i class="ion-ios-heart"></i></span>
                                 </a>
                             </div>
@@ -174,7 +176,8 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-6 col-lg-3 ftco-animate">
+            }
+           @*  <div class="col-md-6 col-lg-3 ftco-animate">
                 <div class="product">
                     <a href="#" class="img-prod">
                         <img class="img-fluid" src="images/product-2.jpg" alt="Colorlib Template">
@@ -379,7 +382,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> *@
         </div>
     </div>
 </section>
@@ -493,28 +496,6 @@
 </section>
 
 <hr>
-
-<section class="ftco-section ftco-partner">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm ftco-animate">
-                <a href="#" class="partner"><img src="images/partner-1.png" class="img-fluid" alt="Colorlib Template"></a>
-            </div>
-            <div class="col-sm ftco-animate">
-                <a href="#" class="partner"><img src="images/partner-2.png" class="img-fluid" alt="Colorlib Template"></a>
-            </div>
-            <div class="col-sm ftco-animate">
-                <a href="#" class="partner"><img src="images/partner-3.png" class="img-fluid" alt="Colorlib Template"></a>
-            </div>
-            <div class="col-sm ftco-animate">
-                <a href="#" class="partner"><img src="images/partner-4.png" class="img-fluid" alt="Colorlib Template"></a>
-            </div>
-            <div class="col-sm ftco-animate">
-                <a href="#" class="partner"><img src="images/partner-5.png" class="img-fluid" alt="Colorlib Template"></a>
-            </div>
-        </div>
-    </div>
-</section>
 
 <section class="ftco-section ftco-no-pt ftco-no-pb py-5 bg-light">
     <div class="container py-4">

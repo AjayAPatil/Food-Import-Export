@@ -10,6 +10,7 @@ namespace Food.Models
         public byte[] Images { get; set; }
         public decimal MRPrice { get; set; }
         public decimal SalePrice { get; set; }
+        public decimal? DiscountPercent { get; set; }
         public int CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public bool IsDeleted { get; set; }

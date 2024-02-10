@@ -345,8 +345,9 @@ AOS.init({
 })(jQuery);
 
 
-window.onload = function () {
-    var user = JSON.parse(localStorage.getItem("UserInfo") ?? "");
+window.onload = onloadPage
+
+function onloadPage() {
     var lin = document.getElementById('user-login-btn');
     var lout = document.getElementById('user-logout-btn');
     var admn = document.getElementById('admin-btn');
@@ -354,16 +355,25 @@ window.onload = function () {
     lin.style.display = 'block';
     lout.style.display = 'none';
     admn.style.display = 'none';
+    var jsonuserdata = localStorage.getItem("UserInfo");
+    if (jsonuserdata) {
+        var user = JSON.parse(jsonuserdata);
 
-    if (user) {
-        lin.style.display = 'none'
-        lout.style.display = 'block'
-        if (user.role == 'Admin') {
-            admn.style.display = 'block';
+        if (user) {
+            lin.style.display = 'none'
+            lout.style.display = 'block'
+            if (user.role == 'Admin') {
+                admn.style.display = 'block';
+            }
         }
     }
 }
 
+function logout() {
+    localStorage.clear();
+    onloadPage();
+    location.reload();
+}
 
 function showSuccessMsg(message) {
     showMsg('success', message);

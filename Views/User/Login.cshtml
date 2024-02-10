@@ -22,19 +22,86 @@
             <div class="col-md-7 py-5 wrap-about pb-md-5 ftco-animate">
                 <div class="heading-section-bold mb-4 mt-md-5">
                     <div class="ml-md-0">
-                        <h1 class="mb-0 bread" style="color: #82ae46;">Login</h1>
+                        <h1 class="mb-0 bread" style="color: #82ae46;" id="lbl-login">Login</h1>
+                        <h1 class="mb-0 bread" style="color: #82ae46;" id="lbl-register" hidden>Register</h1>
                     </div>
                 </div>
-                <div class="col-md-12 d-flex align-items-center">
-                    <div class="bg-white p-5 login-form">
-                        <div class="form-group">
-                            <input type="text" title="User Name" value="Admin" name="username" id="username" class="form-control" placeholder="User Name" />
+                <div class="row">
+                    <div class="container">
+                        <ul class="nav nav-tabs nav-justified" style="padding-left: 8px;">
+                            <li class="login-menu login-menu-active" id="tab-login"><a href="javascript:;" onclick="openTab('login')">Login</a></li>
+                            <li class="login-menu" id="tab-register"><a href="javascript:;" onclick="openTab('register')">Register</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-md-12 align-items-center" id="login-form">
+                        <div class="bg-white p-5 login-form">
+                            <div class="form-group">
+                                <span style="color:black;">User Name</span>
+                                <input type="text" title="User Name" value="Admin" name="username" id="username" class="form-control" placeholder="Enter User Name" />
+                            </div>
+                            <div class="form-group">
+                                <span style="color:black;">Password</span>
+                                <input type="password" title="Password" value="Pass@123" name="password" id="password" class="form-control" placeholder="Enter Password" />
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" onclick="submitlogin()" value="Login" class="btn btn-success py-3 px-5">
+                                <input type="reset" onclick="resetsubmitlogin()" value="Reset" class="btn btn-secondary py-3 px-5">
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <input type="password" title="Password" value="Pass@123" name="password" id="password" class="form-control" placeholder="Password" />
-                        </div>
-                        <div class="form-group">
-                            <input type="submit" onclick="submitlogin()" value="Login" class="btn btn-success py-3 px-5">
+                    </div>
+                    <div class="col-md-12 align-items-center" id="register-form" hidden>
+                        <div class="bg-white p-5 login-form">
+                            <div class="form-group">
+                                <span style="color:black;">User Name</span>
+                                <input type="text" title="User Name" name="r-username" id="r-username" class="form-control" placeholder="Enter User Name" />
+                            </div>
+                            <div class="form-group">
+                                <span style="color:black;">Password</span>
+                                <input type="password" title="Password" name="r-password" id="r-password" class="form-control" placeholder="Enter Password" />
+                            </div>
+                            <div class="form-group">
+                                <span style="color:black;">Confirm Password</span>
+                                <input type="password" title="Confirm Password" name="confirm-password" id="confirm-password" onkeyup="confirmPwd()" class="form-control" placeholder="Enter Password Again" />
+                                <span style="color:red;" id="msg-confirm-password" hidden></span>
+                            </div>
+                            <div class="form-group">
+                                <span style="color:black;">First Name</span>
+                                <input type="text" title="First Name" name="firstname" id="firstname" class="form-control" placeholder="Enter First Name" />
+                            </div>
+                            <div class="form-group">
+                                <span style="color:black;">Last Name</span>
+                                <input type="text" title="Last Name" name="lastname" id="lastname" class="form-control" placeholder="Enter Last Name" />
+                            </div>
+                            <div class="form-group">
+                                <span style="color:black;">Gender</span> <br />
+                                <input type="radio" id="male" name="gender" value="male"> Male &nbsp;&nbsp;
+                                <input type="radio" id="female" name="gender" value="female"> Female &nbsp;&nbsp;
+                                <input type="radio" id="other" name="gender" value="other"> Other
+                            </div>
+                            <div class="form-group">
+                                <span style="color:black;">Mobile No.</span>
+                                <input type="number" title="Mobile No." name="mobileno" id="mobileno" class="form-control" placeholder="Enter Mobile No." />
+                            </div>
+                            <div class="form-group">
+                                <span style="color:black;">Email Id</span>
+                                <input type="email" title="Email Id" name="emailid" id="emailid" class="form-control" placeholder="Enter Email Id" />
+                            </div>
+                            <div class="form-group">
+                                <span style="color:black;">Address</span>
+                                <input type="email" title="Address" name="address" id="address" class="form-control" placeholder="Enter Address" />
+                            </div>
+                            <div class="form-group">
+                                <span style="color:black;">City</span>
+                                <input type="text" title="City" name="city" id="city" class="form-control" placeholder="Enter City Name" />
+                            </div>
+                            <div class="form-group">
+                                <span style="color:black;">Pin Code</span>
+                                <input type="number" title="Pin Code" name="pincode" id="pincode" class="form-control" placeholder="Enter Pin Code" />
+                            </div>
+                            <div class="form-group">
+                                <input type="submit" onclick="registeruser()" value="Register" class="btn btn-success py-3 px-5">
+                                <input type="reset" onclick="resetregisteruser()" value="Reset" class="btn btn-secondary py-3 px-5">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -46,10 +113,12 @@
 <div id="msg"></div>
 
 <script>
+    setTimeout(openTab('login'), 1000);
     window.onload = function () {
         localStorage.clear();
     }
-    function submitlogin(){
+
+    function submitlogin() {
         var data = {
             UserName: $('#username').val(),
             Password: $('#password').val(),
@@ -73,10 +142,127 @@
                 showErrorMsg("error");
             });
     }
+    
+    function resetsubmitlogin() {
+        $('#username').val('');
+        $('#password').val('');
+    }
+
+    function openTab(formName) {
+        var login_lbl = document.getElementById('lbl-login');
+        var login_tab = document.getElementById('tab-login');
+        var login_form = document.getElementById('login-form');
+
+        var register_lbl = document.getElementById('lbl-register');
+        var register_tab = document.getElementById('tab-register');
+        var register_form = document.getElementById('register-form');
+
+        if (formName == "login") {
+            login_lbl.hidden = false;
+            login_form.hidden = false;
+            login_tab.classList.add('login-menu-active');
+
+            register_lbl.hidden = true;
+            register_form.hidden = true;
+            register_tab.classList.remove('login-menu-active');
+        } else {
+            login_lbl.hidden = true;
+            login_form.hidden = true;
+            login_tab.classList.remove('login-menu-active');
+
+            register_lbl.hidden = false;
+            register_form.hidden = false;
+            register_tab.classList.add('login-menu-active');
+        }
+        document.getElementById('btn-scroll-up').click();
+    }
+    
+    function registeruser() {
+        var data = {
+            UserName: $('#r-username').val(),
+            Password: $('#r-password').val(),
+            ConfirmPassword: $('#confirm-password').val(),
+            FirstName: $('#firstname').val(),
+            LastName: $('#lastname').val(),
+            Gender: $("input[type='radio'][name='gender']:checked").val() ?? '',
+            MobileNo: $('#mobileno').val(),
+            EmailId: $('#emailid').val(),
+            Address: $('#address').val(),
+            City: $('#city').val(),
+            PinCode: $('#pincode').val(),
+            Role: 'customer',
+            IsActive: true,
+            IsDeleted: false,
+
+        };
+
+        $.post("/User/RegisterUser", { data: data })
+            .done(function (res) {
+                if (res?.status == "success") {
+                    showSuccessMsg(res.message);
+                    openTab('login');
+                    resetregisteruser();
+                } else if (res?.status) {
+                    showErrorMsg(res.message);
+                } else {
+                    showErrorMsg("error");
+                }
+            })
+            .fail(function () {
+                showErrorMsg("error");
+            });
+    }
+
+    function resetregisteruser() {
+        $('#r-username').val('');
+        $('#r-password').val('');
+        $('#confirm-password').val('');
+        $('#firstname').val('');
+        $('#lastname').val('');
+        $("input[type='radio'][name='gender']").prop('checked', false);
+        $('#mobileno').val('');
+        $('#emailid').val('');
+        $('#address').val('');
+        $('#city').val('');
+        $('#pincode').val('');        
+    }
+
+    function confirmPwd() {
+        var Password = $('#r-password').val();
+        var ConfirmPassword = $('#confirm-password').val();
+        var errmsg = document.getElementById('msg-confirm-password');
+        if (Password == ConfirmPassword) {
+            errmsg.hidden = true;
+        } else {
+            errmsg.hidden = false;
+            errmsg.innerHTML = 'Password not matched!';
+        }
+    }
 </script>
 
 <style>
     .login-form {
         width: 100%;
+    }
+
+    .nav .nav-tabs {
+        padding: 15px;
+    }
+    .login-menu {
+        padding: 5px;
+    }
+
+    .login-menu-active {
+        background-color: #fff;
+        margin-bottom: -1px;
+        border: 1px solid #ddd;
+        border-bottom-color: transparent;
+        
+    }
+
+    li.login-menu-active > a {
+        color: #555;
+        cursor: default;
+        background-color: #fff;
     }
 </style>

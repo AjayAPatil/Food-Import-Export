@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS `tbl_UserProducts`;
 DROP TABLE IF EXISTS `tbl_Products`;
 DROP TABLE IF EXISTS `tbl_userdetails`;
 
@@ -34,6 +35,7 @@ CREATE TABLE tbl_Products(
     Images LONGBLOB,
     MRPrice DECIMAL(10, 2) DEFAULT 0,
     SalePrice DECIMAL(10, 2) DEFAULT 0,
+    DiscountPercent DECIMAL(10, 2) DEFAULT 0,
     CreatedBy INT NOT NULL,
     CreatedOn DATE DEFAULT CURRENT_DATE(),
     IsDeleted BIT DEFAULT 1,
@@ -42,3 +44,16 @@ CREATE TABLE tbl_Products(
 );
 
 ALTER TABLE tbl_Products AUTO_INCREMENT=1;
+
+CREATE TABLE tbl_UserProducts(
+    UserProductId INT NOT NULL AUTO_INCREMENT,
+    ProductId INT NOT NULL REFERENCES tbl_Products(ProductId),
+    SavedAs VARCHAR(5000),
+    CreatedBy INT NOT NULL,
+    CreatedOn DATE DEFAULT CURRENT_DATE(),
+    IsDeleted BIT DEFAULT 1,
+	PRIMARY KEY(UserProductId),
+	FOREIGN KEY (CreatedBy) REFERENCES tbl_UserDetails(UserId)
+);
+
+ALTER TABLE tbl_UserProducts AUTO_INCREMENT=1;

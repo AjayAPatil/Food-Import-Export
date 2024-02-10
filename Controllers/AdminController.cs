@@ -37,6 +37,7 @@ namespace Food.Controllers
                         Description = reader.GetString("Description"),
                         MRPrice = reader.GetDecimal("MRPrice"),
                         SalePrice = reader.GetDecimal("SalePrice"),
+                        DiscountPercent = reader.GetDecimal("DiscountPercent"),
                         CreatedBy = reader.GetInt32("CreatedBy"),
                         CreatedOn = reader.GetDateTime("CreatedOn"),
                         Images = reader["Images"] == null ? Array.Empty<byte>() : (byte[])reader["Images"],
@@ -109,7 +110,7 @@ namespace Food.Controllers
                 string query = "";
                 if (product.ProductId > 0)
                 {
-                    query = "UPDATE `tbl_products` SET `ProductName`=@ProductName, `Description`=@Description, `Images`=@Images, `MRPrice`=@MRPrice, `SalePrice`=@SalePrice, `CreatedBy`=@CreatedBy, `CreatedOn`=@CreatedOn,`IsDeleted`=@IsDeleted WHERE ProductId=" + product.ProductId.ToString();
+                    query = "UPDATE `tbl_products` SET `ProductName`=@ProductName, `Description`=@Description, `Images`=@Images, `MRPrice`=@MRPrice, `SalePrice`=@SalePrice, `DiscountPercent`=@DiscountPercent, `CreatedBy`=@CreatedBy, `CreatedOn`=@CreatedOn,`IsDeleted`=@IsDeleted WHERE ProductId=" + product.ProductId.ToString();
                     response.Status = "success";
                     response.Message = "Updated Successfully";
                     response.Data = product;
@@ -117,7 +118,7 @@ namespace Food.Controllers
                 else
                 {
                     product.CreatedOn = DateTime.Now;
-                    query = "INSERT INTO `tbl_products`(`ProductName`, `Description`, `Images`, `MRPrice`, `SalePrice`, `CreatedBy`, `CreatedOn`, `IsDeleted`) VALUES (@ProductName,@Description,@Images,@MRPrice,@SalePrice,@CreatedBy,@CreatedOn,@IsDeleted)";
+                    query = "INSERT INTO `tbl_products`(`ProductName`, `Description`, `Images`, `MRPrice`, `SalePrice`, `DiscountPercent`, `CreatedBy`, `CreatedOn`, `IsDeleted`) VALUES (@ProductName,@Description,@Images,@MRPrice,@SalePrice,@DiscountPercent,@CreatedBy,@CreatedOn,@IsDeleted)";
                     response.Status = "success";
                     response.Message = "Added Successfully";
                     response.Data = product;
@@ -133,6 +134,7 @@ namespace Food.Controllers
                 _ = command.Parameters.AddWithValue("@Images", product.Images);
                 _ = command.Parameters.AddWithValue("@MRPrice", product.MRPrice);
                 _ = command.Parameters.AddWithValue("@SalePrice", product.SalePrice);
+                _ = command.Parameters.AddWithValue("@DiscountPercent", product.DiscountPercent);
                 _ = command.Parameters.AddWithValue("@CreatedBy", product.CreatedBy);
                 _ = command.Parameters.AddWithValue("@CreatedOn", product.CreatedOn);
                 _ = command.Parameters.AddWithValue("@IsDeleted", product.IsDeleted);
