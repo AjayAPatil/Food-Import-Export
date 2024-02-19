@@ -1,0 +1,197 @@
+﻿@{
+    ViewData["Title"] = "Shop";
+}
+
+<section class="ftco-section">
+@*     <div class="container">
+        <div class="row justify-content-center mb-3 pb-3">
+            <div class="col-md-12 heading-section text-center ftco-animate">
+                <span class="subheading">Featured Products</span>
+                <h2 class="mb-4">Our Products</h2>
+                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
+            </div>
+        </div>
+    </div> *@
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-10 mb-5 text-center">
+                <ul class="product-category">
+                    <li><a href="/Shop?category=0" class="@(@Model.categoryId == 0 ? "active" : "")">All</a></li>
+                    @{
+                        for (int i = 0; i < @Model.categoryList.Count; i++)
+                        {
+                            if (@Model.categoryList[i].CategoryName != "none")
+                            {
+                                <li><a href="/Shop?category=@Model.categoryList[i].CategoryId" class="@(@Model.categoryId == @Model.categoryList[i].CategoryId ? "active" : "")">@Model.categoryList[i].CategoryName</a></li>
+                            }
+                        }
+                    }
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            @if (@Model.productList.Count == 0)
+            {
+                <div class="container">
+                    <div class="row justify-content-center mb-3 pb-3">
+                        <div class="col-md-12 heading-section text-center ftco-animate">
+                            <h2 class="mb-4">Items Not Found</h2>
+                            <span class="subheading">Please try after some time.</span>
+                        <p>Our team working on it</p>
+                    </div>
+                </div>
+            </div>
+            }
+            @for (int i = 0; i < Model.productList.Count; i++)
+            {
+                <div class="col-md-6 col-lg-3 ftco-animate">
+                    <div class="product">
+                        <a href="#" class="img-prod">
+                            <img class="img-fluid" src="@Model.productList[i]?.ImagesB64" alt="@Model.productList[i]?.ProductName">
+                            <span class="status" @(@Model.productList[i]?.DiscountPercent > 0 ? "" : "hidden")>@Math.Round(Model.productList[i]?.DiscountPercent, 2).ToString("G29") %</span>
+                            <div class="overlay"></div>
+                        </a>
+                        <div class="text py-3 pb-4 px-3 text-center">
+                            <h3><a href="#">@Model.productList[i].ProductName</a></h3>
+                            <div class="d-flex">
+                                <div class="pricing">
+                                    <p class="price"><span class="mr-2 price-dc" @(@Model.productList[i]?.MRPrice == @Model.productList[i]?.SalePrice ? "hidden" : "")>@Model.productList[i]?.MRPrice ₹</span><span class="price-sale">@Model.productList[i]?.SalePrice ₹</span></p>
+                                </div>
+                            </div>
+                            <div class="bottom-area d-flex px-3">
+                                <div class="m-auto d-flex">
+                                    <a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center" title="View More">
+                                        <span><i class="ion-ios-menu"></i></span>
+                                    </a>
+                                    <a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1" title="Add To Kart">
+                                        <span><i class="ion-ios-cart"></i></span>
+                                    </a>
+                                    <a href="javascript:;" id="ico-favourite-@Model.productList[i].ProductId" onclick="addToFavourite(@Model.productList[i].ProductId)" class="heart d-flex justify-content-center align-items-center " title="Add To Favourite">
+                                        <span><i class="ion-ios-heart"></i></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<section class="ftco-section img" style="background-image: url(images/bg_3.jpg);">
+    <div class="container">
+        <div class="row justify-content-end">
+            <div class="col-md-6 heading-section ftco-animate deal-of-the-day ftco-animate">
+                <span class="subheading">Best Price For You</span>
+                <h2 class="mb-4">Deal of the day</h2>
+                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
+                <h3><a href="#">Spinach</a></h3>
+                <span class="price">$10 <a href="#">now $5 only</a></span>
+                <div id="timer" class="d-flex mt-5">
+                    <div class="time" id="days"></div>
+                    <div class="time pl-3" id="hours"></div>
+                    <div class="time pl-3" id="minutes"></div>
+                    <div class="time pl-3" id="seconds"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<hr>
+
+<section class="ftco-section ftco-no-pt ftco-no-pb py-5 bg-light">
+    <div class="container py-4">
+        <div class="row d-flex justify-content-center py-5">
+            <div class="col-md-6">
+                <h2 style="font-size: 22px;" class="mb-0">Subcribe to our Newsletter</h2>
+                <span>Get e-mail updates about our latest shops and special offers</span>
+            </div>
+            <div class="col-md-6 d-flex align-items-center">
+                <form action="#" class="subscribe-form">
+                    <div class="form-group d-flex">
+                        <input type="text" class="form-control" placeholder="Enter email address">
+                        <input type="submit" value="Subscribe" class="submit px-3">
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    window.onload = function () {
+        var user = localStorage.getItem("UserInfo");
+        if (user) {
+            //alert(user)
+        } else {
+            //location.href = "User/LoginPage";
+        }
+    }
+
+    setTimeout(getUserProducts, 500);
+
+    function getUserProducts() {
+        var user = localStorage.getItem("UserInfo");
+        if (user) {
+            let userdata = JSON.parse(user);
+
+            $.get("/Shop/GetUserProducts?userid=" + userdata.userId)
+                .done(function (res) {
+                    console.log(res);
+                    if (res?.status == "success") {
+                        res.data?.forEach(row => {
+                            if (row.savedAs == 'Favourites') {
+                                let heart = document.getElementById('ico-favourite-' + row.productId);
+                                if (heart) {
+                                    heart.style.color = 'red';
+                                    heart.title = 'Added to Favourites.'
+                                }
+                            }
+                        });
+                    }
+                })
+                .fail(function () {
+                });
+        }
+    }
+
+    function addToFavourite(productId) {
+        var user = localStorage.getItem("UserInfo");
+        if (user) {
+            let userdata = JSON.parse(user);
+
+            let data = {
+                ProductId: productId,
+                SavedAs: 'Favourites',
+                CreatedBy: userdata.userId,
+                IsDeleted: false
+            }
+
+            $.post("/Shop/AddToFavourites", { userProducts: data })
+                .done(function (res) {
+                    if (res?.status == "success") {
+                        showSuccessMsg(res.message);
+                        if (res.data?.isDeleted == true) {
+                            document.getElementById('ico-favourite-' + productId).style.color = 'white';
+                        } else {
+                            document.getElementById('ico-favourite-' + productId).style.color = 'red';
+                        }
+                    } else if (res?.status) {
+                        showErrorMsg(res.message);
+                    } else {
+                        showErrorMsg("error");
+                    }
+                })
+                .fail(function () {
+                    showErrorMsg("error");
+                });
+        } else {
+            showInfoMsg('Please login!');
+            // setTimeout(function () {
+            //     window.location.href = '/User/Login';
+            // }, 500)
+        }
+    }
+</script>

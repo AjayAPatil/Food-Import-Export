@@ -43,7 +43,7 @@ namespace Food.Controllers
                         DiscountPercent = reader.GetDecimal("DiscountPercent"),
                         CreatedBy = reader.GetInt32("CreatedBy"),
                         CreatedOn = reader.GetDateTime("CreatedOn"),
-                        Images = reader["Images"] == null ? Array.Empty<byte>() : (byte[])reader["Images"]
+                        Images = reader["Images"] == null || reader["Images"] == DBNull.Value ? Array.Empty<byte>() : (byte[])reader["Images"]
                     };
                     if (product.Images != null)
                     {

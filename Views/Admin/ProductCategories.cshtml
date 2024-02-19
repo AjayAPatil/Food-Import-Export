@@ -1,0 +1,111 @@
+﻿@{
+    ViewData["Title"] = "Categories Dashboard";
+}
+
+<section class="ftco-section ftco-no-pb ftco-no-pt bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="row">
+                    <div class="col-md-12">
+                        <a href="/Admin/Categories?uaction=new" class="button"> <span class="icon-plus"></span> Add New</a>
+                    </div>
+                    <div class="col-md-12 table-product-div">
+                        <table class="table-bordered table-product">
+                            <tr>
+                                <th>Action</th>
+                                <th>Name</th>
+                            </tr>
+                            @for (int i = 0; i < Model.Categories.Count; i++)
+                            {
+                                <tr onclick="window.location.href='/Admin/Categories?uaction=view&id=@Model.Categories[i].CategoryId'" class="@(@Model.Categories[i].IsActive == true ? "table-product-active": "")">
+                                    <td>
+                                        <a href="/Admin/Categories?uaction=edit&id=@Model.Categories[i].CategoryId" title="Edit Row" class="tbl-product-btn"> <span class="icon-edit"></span> </a>
+                                        <a href="/Admin/Categories?uaction=view&id=@Model.Categories[i].CategoryId" title="View Row" class="tbl-product-btn"> <span class="icon-eye"></span> </a>
+                                    </td>
+                                    <td>@Model.Categories[i].CategoryName</td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="col-md-12 d-flex align-items-center">
+                    <div class="bg-white p-5 product-form">
+                        <div class="row">
+                            <div class="form-group col-md-12">
+                                <span style="color:black;">Category Name</span>
+                                <input type="text" @(@Model.Action == "view" ? "disabled" : "") title="Category Name" value="@Model.CurrentCategory?.CategoryName" name="categoryname" id="categoryname" class="form-control" placeholder="Enter Category Name" />
+                            </div>
+                            <div class="form-group col-md-12">
+                                <span style="color:black;">Description</span>
+                                <textarea @(@Model.Action == "view" ? "disabled" : "") title="Description" value="@Model.CurrentCategory?.Description" name="description" id="description" class="form-control" placeholder="Enter Description">@Model.CurrentCategory?.Description</textarea>
+                            </div>
+                        </div>
+                        <div class="form-group" @(@Model.Action == "view" ? "hidden" : "")>
+                            <input type="submit" onclick="submitdata('save')" value="Save" class="btn btn-success py-3 px-5"> &nbsp;&nbsp;
+                            <input type="submit" onclick="submitdata('delete')" value="Delete" class="btn btn-danger py-3 px-5" @(@Model.Action == "new" ? "hidden" : "")>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+
+    setTimeout(function () {
+        var user = localStorage.getItem("UserInfo");
+        if (user) {
+            var userdata = JSON.parse(user);
+            if (userdata.role != "Admin") {
+                location.href = "User/LoginPage";
+            }
+        } else {
+            location.href = "User/LoginPage";
+        }
+    }, 100);
+
+    async function submitdata(action) {
+        var user = localStorage.getItem("UserInfo");
+        var userdata = JSON.parse(user);
+        var data = {
+            CategoryId: @(@Model.CurrentCategory?.CategoryId != null ? @Model.CurrentCategory?.CategoryId : 0),
+            CreatedBy: userdata.userId,
+            CategoryName: $('#categoryname').val(),
+            Description: $('#description').val(),
+            IsDeleted: action == 'delete',
+            IsActive: false
+        };
+
+        if (!data.CategoryName) {
+            showErrorMsg('Please enter Categoryname.')
+            return;
+        }
+        if (!data.Description) {
+            showErrorMsg('Please enter Description.')
+            return;
+        }
+
+
+        $.post("/Admin/SaveCategory", { category: data })
+            .done(function (res) {
+                console.log(JSON.stringify(res))
+                if (res?.status == "success") {
+                    showSuccessMsg(res.message);
+                    setTimeout(function () {
+                        location = location.href.replace('edit', 'view')
+                    }, 2000);
+                } else if (res?.status) {
+                    showErrorMsg(res.message);
+                } else {
+                    showErrorMsg("error");
+                }
+            })
+            .fail(function () {
+                showErrorMsg("error!");
+            });
+    }
+</script>

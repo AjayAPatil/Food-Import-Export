@@ -6,11 +6,12 @@ namespace Food.Models
     {
         public int ProductId { get; set; }
         public string ProductName { get; set; }
-        public string Description { get; set; }        
+        public string Description { get; set; }
         public byte[] Images { get; set; }
         public decimal MRPrice { get; set; }
         public decimal SalePrice { get; set; }
         public decimal? DiscountPercent { get; set; }
+        public int CategoryId { get; set; }
         public int CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public bool IsDeleted { get; set; }
