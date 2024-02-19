@@ -60,10 +60,10 @@
                             </div>
                             <div class="bottom-area d-flex px-3">
                                 <div class="m-auto d-flex">
-                                    <a href="#" class="add-to-cart d-flex justify-content-center align-items-center text-center" title="View More">
+                                    <a href="/Shop" class="add-to-cart d-flex justify-content-center align-items-center text-center" title="View More">
                                         <span><i class="ion-ios-menu"></i></span>
                                     </a>
-                                    <a href="#" class="buy-now d-flex justify-content-center align-items-center mx-1" title="Add To Kart">
+                                    <a href="javascript:;" id="ico-cart-@Model.productList[i].ProductId" onclick="addToCart(@Model.productList[i].ProductId)" class="buy-now d-flex justify-content-center align-items-center mx-1" title="Add To Kart">
                                         <span><i class="ion-ios-cart"></i></span>
                                     </a>
                                     <a href="javascript:;" id="ico-favourite-@Model.productList[i].ProductId" onclick="addToFavourite(@Model.productList[i].ProductId)" class="heart d-flex justify-content-center align-items-center " title="Add To Favourite">
@@ -148,6 +148,12 @@
                                     heart.style.color = 'red';
                                     heart.title = 'Added to Favourites.'
                                 }
+                            } else if (row.savedAs == 'Cart') {
+                                let heart = document.getElementById('ico-cart-' + row.productId);
+                                if (heart) {
+                                    heart.style.color = 'black';
+                                    heart.title = 'Added to Cart.'
+                                }
                             }
                         });
                     }
@@ -175,8 +181,50 @@
                         showSuccessMsg(res.message);
                         if (res.data?.isDeleted == true) {
                             document.getElementById('ico-favourite-' + productId).style.color = 'white';
+                            document.getElementById('ico-favourite-' + productId).title = 'Add to Favourites.';
                         } else {
                             document.getElementById('ico-favourite-' + productId).style.color = 'red';
+                            document.getElementById('ico-favourite-' + productId).title = 'Added to Favourites.';
+                        }
+                    } else if (res?.status) {
+                        showErrorMsg(res.message);
+                    } else {
+                        showErrorMsg("error");
+                    }
+                })
+                .fail(function () {
+                    showErrorMsg("error");
+                });
+        } else {
+            showInfoMsg('Please login!');
+            // setTimeout(function () {
+            //     window.location.href = '/User/Login';
+            // }, 500)
+        }
+    }
+
+    function addToCart(productId) {
+        var user = localStorage.getItem("UserInfo");
+        if (user) {
+            let userdata = JSON.parse(user);
+
+            let data = {
+                ProductId: productId,
+                SavedAs: 'Cart',
+                CreatedBy: userdata.userId,
+                IsDeleted: false
+            }
+
+            $.post("/Shop/AddToFavourites", { userProducts: data })
+                .done(function (res) {
+                    if (res?.status == "success") {
+                        showSuccessMsg(res.message);
+                        if (res.data?.isDeleted == true) {
+                            document.getElementById('ico-cart-' + productId).style.color = 'white';
+                            document.getElementById('ico-cart-' + productId).title = 'Add to Cart.';
+                        } else {
+                            document.getElementById('ico-cart-' + productId).style.color = 'black';
+                            document.getElementById('ico-cart-' + productId).title = 'Added to Cart.';
                         }
                     } else if (res?.status) {
                         showErrorMsg(res.message);
