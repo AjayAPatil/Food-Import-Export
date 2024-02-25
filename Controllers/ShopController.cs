@@ -12,11 +12,11 @@ namespace Food.Controllers
             _config = config;
         }
 
-        public IActionResult Index(int? category = null)
+        public IActionResult Index(int category = 0)
         {
             string query = "select * from tbl_Products where isdeleted = 0";
 
-            if (category != null && category != 0)
+            if (category != 0)
             {
                 query += " and CategoryId = " + category.ToString();
             }
@@ -42,6 +42,8 @@ namespace Food.Controllers
                         MRPrice = reader.GetDecimal("MRPrice"),
                         SalePrice = reader.GetDecimal("SalePrice"),
                         DiscountPercent = reader.GetDecimal("DiscountPercent"),
+                        AvailableQuantity = reader["AvailableQuantity"] != DBNull.Value ? Convert.ToInt32(reader["AvailableQuantity"]) : null,
+                        AvailableQuantityUnit = reader["AvailableQuantityUnit"] != DBNull.Value ? Convert.ToString(reader["AvailableQuantityUnit"]) : null,
                         CreatedBy = reader.GetInt32("CreatedBy"),
                         CreatedOn = reader.GetDateTime("CreatedOn"),
                         Images = reader["Images"] == null ? Array.Empty<byte>() : (byte[])reader["Images"]
@@ -194,6 +196,106 @@ namespace Food.Controllers
                 response.Message = "Added to " + userProducts.SavedAs;
                 return response;
             }
+        }
+
+        public IActionResult Product(int productId)
+        {
+            if (productId == 0)
+            {
+                return Index();
+            }
+			string query = "select * from tbl_Products where isdeleted = 0";
+
+			MySqlConnection connection = new()
+			{
+				ConnectionString = _config.GetConnectionString("DefaultConnection")
+			};
+			connection.Open();
+			MySqlCommand command = new(query, connection);
+			MySqlDataReader reader = command.ExecuteReader();
+
+			List<ProductModel> productList = new();
+			if (reader.HasRows)
+			{
+				while (reader.Read())
+				{
+					ProductModel product = new()
+					{
+						ProductId = reader.GetInt32("ProductId"),
+						ProductName = reader.GetString("ProductName"),
+						Description = reader.GetString("Description"),
+						MRPrice = reader.GetDecimal("MRPrice"),
+						SalePrice = reader.GetDecimal("SalePrice"),
+						DiscountPercent = reader.GetDecimal("DiscountPercent"),
+                        AvailableQuantity = reader["AvailableQuantity"] != DBNull.Value ? Convert.ToInt32(reader["AvailableQuantity"]) : null,
+                        AvailableQuantityUnit = reader["AvailableQuantityUnit"] != DBNull.Value ? Convert.ToString(reader["AvailableQuantityUnit"]) : null,
+                        CreatedBy = reader.GetInt32("CreatedBy"),
+						CreatedOn = reader.GetDateTime("CreatedOn"),
+						Images = reader["Images"] == null ? Array.Empty<byte>() : (byte[])reader["Images"]
+					};
+					if (product.Images != null)
+					{
+						product.ImagesB64 = "data:image/jpg;base64," + Convert.ToBase64String(product.Images);
+					}
+					productList.Add(product);
+				}
+			}
+			var currentProduct = productList.Where(a=> a.ProductId == productId).FirstOrDefault();
+            if (currentProduct == null)
+            {
+				return Index();
+			}
+			productList = productList.Where(a=> a.CategoryId == currentProduct.CategoryId && a.ProductId != productId).ToList();
+			return View("Product", new { productList = productList, currentProduct = currentProduct });
+        }
+
+        public IActionResult OrderProduct(int productId, int quantity)
+        {
+            if (productId == 0 && quantity == 0)
+            {
+                return Index();
+            }
+            string query = "select * from tbl_Products where isdeleted = 0 and ProductId=" + productId.ToString();
+
+            MySqlConnection connection = new()
+            {
+                ConnectionString = _config.GetConnectionString("DefaultConnection")
+            };
+            connection.Open();
+            MySqlCommand command = new(query, connection);
+            MySqlDataReader reader = command.ExecuteReader();
+
+            ProductModel? product = null;
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                     product = new()
+                    {
+                        ProductId = reader.GetInt32("ProductId"),
+                        ProductName = reader.GetString("ProductName"),
+                        Description = reader.GetString("Description"),
+                        MRPrice = reader.GetDecimal("MRPrice"),
+                        SalePrice = reader.GetDecimal("SalePrice"),
+                        DiscountPercent = reader.GetDecimal("DiscountPercent"),
+                        AvailableQuantity = reader["AvailableQuantity"] != DBNull.Value ? Convert.ToInt32(reader["AvailableQuantity"]) : null,
+                        AvailableQuantityUnit = reader["AvailableQuantityUnit"] != DBNull.Value ? Convert.ToString(reader["AvailableQuantityUnit"]) : null,
+                        CreatedBy = reader.GetInt32("CreatedBy"),
+                        CreatedOn = reader.GetDateTime("CreatedOn"),
+                        Images = reader["Images"] == null ? Array.Empty<byte>() : (byte[])reader["Images"]
+                    };
+                    if (product.Images != null)
+                    {
+                        product.ImagesB64 = "data:image/jpg;base64," + Convert.ToBase64String(product.Images);
+                    }
+                }
+            }
+
+            if (product == null)
+            {
+                return Index();
+            }
+            return View("OrderProduct", new { currentProduct = product });
         }
     }
 }

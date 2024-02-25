@@ -46,6 +46,8 @@ namespace Food.Controllers
                         SalePrice = reader.GetDecimal("SalePrice"),
                         DiscountPercent = reader.GetDecimal("DiscountPercent"),
                         CategoryId = Convert.ToInt32(reader["CategoryId"]),
+                        AvailableQuantity = reader["AvailableQuantity"] != DBNull.Value ? Convert.ToInt32(reader["AvailableQuantity"]) : null,
+                        AvailableQuantityUnit = reader["AvailableQuantityUnit"] != DBNull.Value ? Convert.ToString(reader["AvailableQuantityUnit"]) : null,
                         CreatedBy = reader.GetInt32("CreatedBy"),
                         CreatedOn = reader.GetDateTime("CreatedOn"),
                         Images = reader["Images"] == null || reader["Images"] == DBNull.Value ? Array.Empty<byte>() : (byte[])reader["Images"],
@@ -120,7 +122,7 @@ namespace Food.Controllers
                 string query = "";
                 if (product.ProductId > 0)
                 {
-                    query = "UPDATE `tbl_products` SET `ProductName`=@ProductName, `Description`=@Description, `Images`=@Images, `MRPrice`=@MRPrice, `SalePrice`=@SalePrice, `DiscountPercent`=@DiscountPercent, `CategoryId`=@CategoryId, `CreatedBy`=@CreatedBy, `CreatedOn`=@CreatedOn,`IsDeleted`=@IsDeleted WHERE ProductId=" + product.ProductId.ToString();
+                    query = "UPDATE tbl_products SET ProductName=@ProductName, Description=@Description, Images=@Images, MRPrice=@MRPrice, SalePrice=@SalePrice, DiscountPercent=@DiscountPercent, CategoryId=@CategoryId, AvailableQuantity=@AvailableQuantity, AvailableQuantityUnit=@AvailableQuantityUnit, CreatedBy=@CreatedBy, CreatedOn=@CreatedOn,IsDeleted=@IsDeleted WHERE ProductId=" + product.ProductId.ToString();
                     response.Status = "success";
                     response.Message = "Updated Successfully";
                     response.Data = product;
@@ -128,7 +130,7 @@ namespace Food.Controllers
                 else
                 {
                     product.CreatedOn = DateTime.Now;
-                    query = "INSERT INTO `tbl_products`(`ProductName`, `Description`, `Images`, `MRPrice`, `SalePrice`, `DiscountPercent`, `CategoryId`, `CreatedBy`, `CreatedOn`, `IsDeleted`) VALUES (@ProductName,@Description,@Images,@MRPrice,@SalePrice,@DiscountPercent,@CategoryId,@CreatedBy,@CreatedOn,@IsDeleted)";
+                    query = "INSERT INTO tbl_products(ProductName, Description, Images, MRPrice, SalePrice, DiscountPercent, CategoryId, AvailableQuantity, AvailableQuantityUnit, CreatedBy, CreatedOn, IsDeleted) VALUES (@ProductName,@Description,@Images,@MRPrice,@SalePrice,@DiscountPercent,@CategoryId,@AvailableQuantity,@AvailableQuantityUnit,@CreatedBy,@CreatedOn,@IsDeleted)";
                     response.Status = "success";
                     response.Message = "Added Successfully";
                     response.Data = product;
@@ -145,6 +147,8 @@ namespace Food.Controllers
                 _ = command.Parameters.AddWithValue("@MRPrice", product.MRPrice);
                 _ = command.Parameters.AddWithValue("@SalePrice", product.SalePrice);
                 _ = command.Parameters.AddWithValue("@DiscountPercent", product.DiscountPercent);
+                _ = command.Parameters.AddWithValue("@AvailableQuantity", product.AvailableQuantity);
+                _ = command.Parameters.AddWithValue("@AvailableQuantityUnit", product.AvailableQuantityUnit);
                 _ = command.Parameters.AddWithValue("@CategoryId", product.CategoryId);
                 _ = command.Parameters.AddWithValue("@CreatedBy", product.CreatedBy);
                 _ = command.Parameters.AddWithValue("@CreatedOn", product.CreatedOn);
@@ -212,7 +216,7 @@ namespace Food.Controllers
                 string query = "";
                 if (category.CategoryId > 0)
                 {
-                    query = "UPDATE `tbl_ProductCategories` SET `CategoryName`=@CategoryName, `Description`=@Description, `CreatedBy`=@CreatedBy, `CreatedOn`=@CreatedOn,`IsDeleted`=@IsDeleted WHERE CategoryId=" + category.CategoryId.ToString();
+                    query = "UPDATE tbl_ProductCategories SET CategoryName=@CategoryName, Description=@Description, CreatedBy=@CreatedBy, CreatedOn=@CreatedOn,IsDeleted=@IsDeleted WHERE CategoryId=" + category.CategoryId.ToString();
                     response.Status = "success";
                     response.Message = "Updated Successfully";
                     response.Data = category;
@@ -220,7 +224,7 @@ namespace Food.Controllers
                 else
                 {
                     category.CreatedOn = DateTime.Now;
-                    query = "INSERT INTO `tbl_ProductCategories`(`CategoryName`, `Description`,`CreatedBy`, `CreatedOn`, `IsDeleted`) VALUES (@CategoryName,@Description,@CreatedBy,@CreatedOn,@IsDeleted)";
+                    query = "INSERT INTO tbl_ProductCategories(CategoryName, Description,CreatedBy, CreatedOn, IsDeleted) VALUES (@CategoryName,@Description,@CreatedBy,@CreatedOn,@IsDeleted)";
                     response.Status = "success";
                     response.Message = "Added Successfully";
                     response.Data = category;

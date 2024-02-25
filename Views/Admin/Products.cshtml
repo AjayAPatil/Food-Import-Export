@@ -15,7 +15,7 @@
                             <tr>
                                 <th>Action</th>
                                 <th>Name</th>
-                                @* <th>Description</th> *@
+                                <th>Available</th>
                                 <th>M.R.P.</th>
                                 <th>Sale Price</th>
                             </tr>
@@ -27,7 +27,7 @@
                                         <a href="/Admin/Products?uaction=view&id=@Model.Products[i].ProductId" title="View Row" class="tbl-product-btn"> <span class="icon-eye"></span> </a>
                                     </td>
                                     <td>@Model.Products[i].ProductName</td>
-                                    @* <td>@Model.Products[i].Description</td> *@
+                                    <td>@Model.Products[i].AvailableQuantity @Model.Products[i].AvailableQuantityUnit</td>
                                     <td>@Model.Products[i].MRPrice</td>
                                     <td>@Model.Products[i].SalePrice</td>
                                 </tr>
@@ -64,29 +64,6 @@
                                         <span style="color:black;">Discount</span>
                                         <input type="number" @(@Model.Action == "view" ? "disabled" : "") title="Discount" value="@Model.CurrentProduct?.DiscountPercent" name="discount" id="discount" class="form-control" placeholder="Enter Discount Percentage" />
                                     </div>
-                                    <div class="form-group col-md-12">
-                                        <span style="color:black;">Category</span>
-                                        <select name="category" id="category" @(@Model.Action == "view" ? "disabled" : "") title="Category" value="@Model.CurrentProduct?.CategoryId" class="form-control" placeholder="Select Category">
-                                            @{
-                                                for (int i = 0; i < @Model.categoryList.Count; i++)
-                                                {
-
-                                                    if ("none" == @Model.categoryList[i].CategoryName)
-                                                    {
-                                                        <option value="@Model.categoryList[i].CategoryId"></option>
-                                                    }
-                                                    else if (@Model.CurrentProduct?.CategoryId == @Model.categoryList[i].CategoryId)
-                                                    {
-                                                        <option selected="selected" value="@Model.categoryList[i].CategoryId">@Model.categoryList[i].CategoryName</option>
-                                                    }
-                                                    else 
-                                                    {
-                                                        <option value="@Model.categoryList[i].CategoryId">@Model.categoryList[i].CategoryName</option>
-                                                    }
-                                                }
-                                            }
-                                        </select>
-                                    </div>
                                 </div>
                             </div>
                             @* @if (!string.IsNullOrEmpty(@Model.CurrentProduct?.ImagesB64))
@@ -96,6 +73,55 @@
                             <div class="form-group col-md-12" @(@Model.Action == "view" ? "hidden" : "")>
                                 <span style="color:black;">Upload Image</span><br />
                                 <input type="file" onchange="onImageSelected()" title="Upload File" placeholder="Upload Image" accept="image/png, image/jpeg, image/jpg" id="product-image-upload" name="product-image-upload" class="form-group col-md-6" />
+                            </div>
+                            <div class="form-group col-md-12">
+                                <span style="color:black;">Category</span>
+                                <select name="category" id="category" @(@Model.Action == "view" ? "disabled" : "") title="Category" value="@Model.CurrentProduct?.CategoryId" class="form-control" placeholder="Select Category">
+                                    @{
+                                        for (int i = 0; i < @Model.categoryList.Count; i++)
+                                        {
+
+                                            if ("none" == @Model.categoryList[i].CategoryName)
+                                            {
+                                                <option value="@Model.categoryList[i].CategoryId"></option>
+                                            }
+                                            else if (@Model.CurrentProduct?.CategoryId == @Model.categoryList[i].CategoryId)
+                                            {
+                                                <option selected="selected" value="@Model.categoryList[i].CategoryId">@Model.categoryList[i].CategoryName</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@Model.categoryList[i].CategoryId">@Model.categoryList[i].CategoryName</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="form-group col-md-12">
+                                <span style="color:black;">Available Quantity</span>
+                                <input type="number" @(@Model.Action == "view" ? "disabled" : "") title="Available Quantity" value="@Model.CurrentProduct?.AvailableQuantity" name="availablequantity" id="availablequantity" class="form-control" placeholder="Enter Available Quantity" />
+                            </div>
+                            <div class="form-group col-md-12">
+                                <span style="color:black;">Available Quantity Unit</span>
+                                <select name="availablequantityunit" id="availablequantityunit" @(@Model.Action == "view" ? "disabled" : "") title="Available Quantity Unit" value="@Model.CurrentProduct?.AvailableQuantityUnit" class="form-control" placeholder="Select Unit">
+                                    @{
+                                        for (int i = 0; i < @Food.Common.FoodConstants.AvailableQuantityUnitList.Count; i++)
+                                        {
+                                            if (@Model.CurrentProduct?.AvailableQuantityUnit == @Food.Common.FoodConstants.AvailableQuantityUnitList[i].Key)
+                                            {
+                                                <option selected="selected" value="@Food.Common.FoodConstants.AvailableQuantityUnitList[i].Key">@Food.Common.FoodConstants.AvailableQuantityUnitList[i].Value</option>
+                                            }
+                                            else if (string.IsNullOrEmpty(@Model.CurrentProduct?.AvailableQuantityUnit) && @Food.Common.FoodConstants.AvailableQuantityUnitList[i].Key == "UNIT")
+                                            {
+                                                <option selected="selected" value="@Food.Common.FoodConstants.AvailableQuantityUnitList[i].Key">@Food.Common.FoodConstants.AvailableQuantityUnitList[i].Value</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@Food.Common.FoodConstants.AvailableQuantityUnitList[i].Key">@Food.Common.FoodConstants.AvailableQuantityUnitList[i].Value</option>
+                                            }
+                                        }
+                                    }
+                                </select>
                             </div>
                         </div>
                         <div class="form-group" @(@Model.Action == "view" ? "hidden" : "")>
@@ -127,7 +153,8 @@
             var uimg = document.getElementById('product-image-upload');
             uimg.files = base64ToFile(img.src);
         }
-    }, 100);
+        $('#availablequantityunit').val('@Model.CurrentProduct?.AvailableQuantityUnit')
+    }, 500);
 
     async function onImageSelected() {
         var imgg = document.getElementById('product-image-upload')
@@ -150,6 +177,8 @@
             SalePrice: $('#saleprice').val(),
             DiscountPercent: $('#discount').val(),
             CategoryId: $('#category').find(":selected").val(),
+            AvailableQuantity: $('#availablequantity').val(),
+            AvailableQuantityUnit: $('#availablequantityunit').find(":selected").val(),
             IsDeleted: action == 'delete',
             IsActive: false
         };

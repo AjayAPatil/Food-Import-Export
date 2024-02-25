@@ -141,7 +141,7 @@ namespace Food.Controllers
             }
             reader.Close();
 
-            query = "INSERT INTO `tbl_userdetails`(`UserName`, `Password`, `Role`, `IsActive`, `IsDeleted`, `CreatedOn`, `FirstName`, `LastName`, `Gender`, `MobileNo`, `EmailId`, `Address`, `City`, `PinCode`) VALUES (@UserName, @Password, @Role, @IsActive, @IsDeleted, @CreatedOn, @FirstName, @LastName, @Gender, @MobileNo, @EmailId, @Address, @City, @PinCode)";
+            query = "INSERT INTO tbl_userdetails(UserName, Password, Role, IsActive, IsDeleted, CreatedOn, FirstName, LastName, Gender, MobileNo, EmailId, Address, City, PinCode) VALUES (@UserName, @Password, @Role, @IsActive, @IsDeleted, @CreatedOn, @FirstName, @LastName, @Gender, @MobileNo, @EmailId, @Address, @City, @PinCode)";
 
             command = new(query, connection);
             _ = command.Parameters.AddWithValue("@UserName", data.UserName);

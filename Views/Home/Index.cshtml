@@ -148,7 +148,7 @@
             {
                 <div class="col-md-6 col-lg-3 ftco-animate">
                     <div class="product">
-                        <a href="#" class="img-prod">
+                        <a href="/Shop/Product?productId=@Model.productList[i].ProductId" class="img-prod">
                             <img class="img-fluid" src="@Model.productList[i]?.ImagesB64" alt="@Model.productList[i]?.ProductName">
                             <span class="status" @(@Model.productList[i]?.DiscountPercent > 0 ? "" : "hidden")>@Math.Round(Model.productList[i]?.DiscountPercent, 2).ToString("G29") %</span>
                             <div class="overlay"></div>

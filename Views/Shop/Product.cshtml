@@ -1,0 +1,271 @@
+﻿@{
+    ViewData["Title"] = "Shop Product";
+}
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-5 ftco-animate">
+                <a href="@Model.currentProduct.ImagesB64" class="image-popup"><img src="@Model.currentProduct.ImagesB64" class="img-fluid" alt="@Model.currentProduct.ProductName" style="height: 100%;"></a>
+            </div>
+            <div class="col-lg-6 product-details pl-md-5 ftco-animate">
+                <h3>@Model.currentProduct.ProductName</h3>
+                <div class="rating d-flex">
+                    <p class="text-left mr-4">
+                        <a href="#" class="mr-2">5.0</a>
+                        <a href="#"><span class="ion-ios-star-outline"></span></a>
+                        <a href="#"><span class="ion-ios-star-outline"></span></a>
+                        <a href="#"><span class="ion-ios-star-outline"></span></a>
+                        <a href="#"><span class="ion-ios-star-outline"></span></a>
+                        <a href="#"><span class="ion-ios-star-outline"></span></a>
+                    </p>
+                    <p class="text-left mr-4">
+                        <a href="#" class="mr-2" style="color: #000;">100 <span style="color: #bbb;">Rating</span></a>
+                    </p>
+                    <p class="text-left">
+                        <a href="#" class="mr-2" style="color: #000;">500 <span style="color: #bbb;">Sold</span></a>
+                    </p>
+                </div>
+                <p class="price"><span>@Model.currentProduct.SalePrice ₹</span></p>
+                <p>
+                    @Model.currentProduct.Description
+                </p>
+                <div class="row mt-4">
+                    @* 	<div class="col-md-6">
+                    <div class="form-group d-flex">
+                    <div class="select-wrap">
+                    <div class="icon"><span class="ion-ios-arrow-down"></span></div>
+                    <select name="" id="" class="form-control">
+                    <option value="">Small</option>
+                    <option value="">Medium</option>
+                    <option value="">Large</option>
+                    <option value="">Extra Large</option>
+                    </select>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="w-100"></div> *@
+                    <div class="input-group col-md-8 d-flex mb-3">
+                        <span class="input-group-btn mr-2">
+                            <button type="button" class="quantity-left-minus btn" data-type="minus" data-field="" onclick="changeNumber('minus', 'quantity')">
+                                <i class="ion-ios-remove"></i>
+                            </button>
+                        </span>
+                        <input type="text" id="quantity" name="quantity" class="form-control input-number" onkeyup="checkNumber('quantity')" value="1" min="1" max="@Model.currentProduct.AvailableQuantity">
+                        <span class="input-group-btn ml-2">
+                            <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="" onclick="changeNumber('plus', 'quantity')">
+                                <i class="ion-ios-add"></i>
+                            </button>
+                            @Food.Common.FoodConstants.AvailableQuantityUnitList.Find(a=> a.Key == @Model.currentProduct.AvailableQuantityUnit)?.Value                       
+                        </span>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col-md-12">
+                        <p style="color: #000;">@Model.currentProduct.AvailableQuantity @Model.currentProduct.AvailableQuantityUnit available</p>
+                    </div>
+                </div>
+                <p>
+                    <a href="javascript:;" id="ico-cart-@Model.currentProduct.ProductId" name="btn-cart-@Model.currentProduct.ProductId" onclick="addToCart(@Model.currentProduct.ProductId)" class="btn btn-primary py-3 px-5">Add to Cart</a>&emsp;
+                    <a href="javascript:;" onclick="orderItem()" class="btn btn-success py-3 px-5">Order Now</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center mb-3 pb-3">
+            <div class="col-md-12 heading-section text-center ftco-animate">
+                <span class="subheading">Products</span>
+                <h2 class="mb-4">Related Products</h2>
+                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            @{
+                for (int i = 0; i < Model.productList.Count; i++)
+                {
+                        <div class="col-md-6 col-lg-3 ftco-animate">
+                            <div class="product">
+                                <a href="javascript:;" class="img-prod" onclick="window.location.href = '/Shop/Product?productId=@Model.productList[i].ProductId';">
+                                    <img class="img-fluid" src="@Model.productList[i].ImagesB64" alt="@Model.productList[i].ProductName">
+                                    <span class="status" @(@Model.productList[i].DiscountPercent > 0 ? "" : "hidden")>@Model.productList[i].DiscountPercent</span>
+                                    <div class="overlay"></div>
+                                </a>
+                                <div class="text py-3 pb-4 px-3 text-center">
+                                    <h3><a href="#">@Model.productList[i].ProductName</a></h3>
+                                    <div class="d-flex">
+                                        <div class="pricing">
+                                            <p class="price"><span class="mr-2 price-dc">@Model.productList[i].MRPrice</span><span class="price-sale">@Model.productList[i].SalePrice</span></p>
+                                        </div>
+                                    </div>
+                                    <div class="bottom-area d-flex px-3">
+                                        <div class="m-auto d-flex">
+                                            <a href="/Shop" class="add-to-cart d-flex justify-content-center align-items-center text-center" title="View more">
+                                                <span><i class="ion-ios-menu"></i></span>
+                                            </a>
+                                            <a href="javascript:;" id="ico-cart-@Model.productList[i].ProductId" onclick="addToCart(@Model.productList[i].ProductId)" class="buy-now d-flex justify-content-center align-items-center mx-1">
+                                                <span><i class="ion-ios-cart"></i></span>
+                                            </a>
+                                            <a href="javascript:;" id="ico-favourite-@Model.productList[i].ProductId" onclick="addToFavourite(@Model.productList[i].ProductId)" class="heart d-flex justify-content-center align-items-center " title="Add To Favourite">
+                                                <span><i class="ion-ios-heart"></i></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                }
+            }
+        </div>
+    </div>
+</section>
+
+
+<script>
+    function checkNumber(id) {
+        let inputVal = $('#' + id).val();
+        if (validation.isNumber(inputVal) == false) {
+            showWarningMsg('Only Numbers Allowed');
+            $('#' + id).val(inputVal.replace(/\D/gm, ""));
+        }
+    }
+    function changeNumber(action, id) {
+        let inputval = Number($('#' + id).val());
+        let newval = inputval + ((action == 'minus') ? -1 : 1);
+        newval = newval < 1 ? 1 : newval;
+        $('#' + id).val(newval)
+    }
+
+    setTimeout(getUserProducts, 500);
+
+    function getUserProducts() {
+        var user = localStorage.getItem("UserInfo");
+        if (user) {
+            let userdata = JSON.parse(user);
+
+            $.get("/Shop/GetUserProducts?userid=" + userdata.userId)
+                .done(function (res) {
+                    console.log(res);
+                    if (res?.status == "success") {
+                        res.data?.forEach(row => {
+                            if (row.savedAs == 'Favourites') {
+                                let heart = document.getElementById('ico-favourite-' + row.productId);
+                                if (heart) {
+                                    heart.style.color = 'red';
+                                    heart.title = 'Added to Favourites.'
+                                }
+                            } else if (row.savedAs == 'Cart') {
+                                let heart = document.getElementById('ico-cart-' + row.productId);
+                                if (heart) {
+                                    heart.style.color = 'black';
+                                    heart.title = 'Added to Cart';
+                                    if (heart.name == 'btn-cart-' + row.productId) {
+                                        heart.innerText = 'Added to Cart';
+                                        heart.style.color = 'white';
+                                    }
+                                }
+                            }
+                        });
+                    }
+                })
+                .fail(function () {
+                });
+        }
+    }
+
+    function addToFavourite(productId) {
+        var user = localStorage.getItem("UserInfo");
+        if (user) {
+            let userdata = JSON.parse(user);
+
+            let data = {
+                ProductId: productId,
+                SavedAs: 'Favourites',
+                CreatedBy: userdata.userId,
+                IsDeleted: false
+            }
+
+            $.post("/Shop/AddToFavourites", { userProducts: data })
+                .done(function (res) {
+                    if (res?.status == "success") {
+                        showSuccessMsg(res.message);
+                        if (res.data?.isDeleted == true) {
+                            document.getElementById('ico-favourite-' + productId).style.color = 'white';
+                            document.getElementById('ico-favourite-' + productId).title = 'Add to Favourites.';
+                        } else {
+                            document.getElementById('ico-favourite-' + productId).style.color = 'red';
+                            document.getElementById('ico-favourite-' + productId).title = 'Added to Favourites.';
+                        }
+                    } else if (res?.status) {
+                        showErrorMsg(res.message);
+                    } else {
+                        showErrorMsg("error");
+                    }
+                })
+                .fail(function () {
+                    showErrorMsg("error");
+                });
+        } else {
+            showInfoMsg('Please login!');
+            // setTimeout(function () {
+            //     window.location.href = '/User/Login';
+            // }, 500)
+        }
+    }
+
+    function addToCart(productId) {
+        var user = localStorage.getItem("UserInfo");
+        if (user) {
+            let userdata = JSON.parse(user);
+
+            let data = {
+                ProductId: productId,
+                SavedAs: 'Cart',
+                CreatedBy: userdata.userId,
+                IsDeleted: false
+            }
+
+            $.post("/Shop/AddToFavourites", { userProducts: data })
+                .done(function (res) {
+                    if (res?.status == "success") {
+                        showSuccessMsg(res.message);
+                        if (res.data?.isDeleted == true) {
+                            document.getElementById('ico-cart-' + productId).style.color = 'white';
+                            document.getElementById('ico-cart-' + productId).title = 'Add to Cart.';
+                            if (document.getElementById('ico-cart-' + productId).name == 'btn-cart-' + productId) {
+                                document.getElementById('ico-cart-' + productId).innerText = 'Add to Cart';
+                            }
+                        } else {
+                            document.getElementById('ico-cart-' + productId).title = 'Added to Cart.';
+                            if (document.getElementById('ico-cart-' + productId).name == 'btn-cart-' + productId) {
+                                document.getElementById('ico-cart-' + productId).innerText = 'Added to Cart';
+                                document.getElementById('ico-cart-' + productId).style.color = 'white';
+                            } else {
+                                document.getElementById('ico-cart-' + productId).style.color = 'black';
+                            }
+                        }
+                    } else if (res?.status) {
+                        showErrorMsg(res.message);
+                    } else {
+                        showErrorMsg("error");
+                    }
+                })
+                .fail(function () {
+                    showErrorMsg("error");
+                });
+        } else {
+            showInfoMsg('Please login!');
+            // setTimeout(function () {
+            //     window.location.href = '/User/Login';
+            // }, 500)
+        }
+    }
+
+    function orderItem() {
+        window.location.href = '/Shop/OrderProduct?productId=@Model.currentProduct.ProductId&quantity=' + $('#quantity').val()
+    }
+</script>

@@ -53,11 +53,13 @@
                         <div class="bg-white p-5 login-form">
                             <div class="form-group">
                                 <span style="color:black;">User Name</span>
-                                <input type="text" title="User Name" name="r-username" id="r-username" class="form-control" placeholder="Enter User Name" />
+                                <input type="text" title="User Name" name="r-username" id="r-username" onkeyup="Validate(this)" class="form-control" placeholder="Enter User Name" />
+                                <span style="color:red;" id="msg-r-username" hidden></span>
                             </div>
                             <div class="form-group">
                                 <span style="color:black;">Password</span>
-                                <input type="password" title="Password" name="r-password" id="r-password" class="form-control" placeholder="Enter Password" />
+                                <input type="password" title="Password" name="r-password" id="r-password" onkeyup="Validate(this)" class="form-control" placeholder="Enter Password" />
+                                <span style="color:red;" id="msg-r-password" hidden></span>
                             </div>
                             <div class="form-group">
                                 <span style="color:black;">Confirm Password</span>
@@ -67,36 +69,45 @@
                             <div class="form-group">
                                 <span style="color:black;">First Name</span>
                                 <input type="text" title="First Name" name="firstname" id="firstname" class="form-control" placeholder="Enter First Name" />
+                                <span style="color:red;" id="msg-firstname" hidden></span>
                             </div>
                             <div class="form-group">
                                 <span style="color:black;">Last Name</span>
                                 <input type="text" title="Last Name" name="lastname" id="lastname" class="form-control" placeholder="Enter Last Name" />
+                                <span style="color:red;" id="msg-lastname" hidden></span>
                             </div>
                             <div class="form-group">
                                 <span style="color:black;">Gender</span> <br />
                                 <input type="radio" id="male" name="gender" value="male"> Male &nbsp;&nbsp;
                                 <input type="radio" id="female" name="gender" value="female"> Female &nbsp;&nbsp;
                                 <input type="radio" id="other" name="gender" value="other"> Other
+                                <br />
+                                <span style="color:red;" id="msg-gender" hidden></span>
                             </div>
                             <div class="form-group">
                                 <span style="color:black;">Mobile No.</span>
-                                <input type="number" title="Mobile No." name="mobileno" id="mobileno" class="form-control" placeholder="Enter Mobile No." />
+                                <input type="number" title="Mobile No." name="mobileno" id="mobileno" onkeyup="Validate(this)" class="form-control" placeholder="Enter Mobile No." />
+                                <span style="color:red;" id="msg-mobileno" hidden></span>
                             </div>
                             <div class="form-group">
                                 <span style="color:black;">Email Id</span>
-                                <input type="email" title="Email Id" name="emailid" id="emailid" class="form-control" placeholder="Enter Email Id" />
+                                <input type="email" title="Email Id" name="emailid" id="emailid" onkeyup="Validate(this)" class="form-control" placeholder="Enter Email Id" />
+                                <span style="color:red;" id="msg-emailid" hidden></span>
                             </div>
                             <div class="form-group">
                                 <span style="color:black;">Address</span>
                                 <input type="email" title="Address" name="address" id="address" class="form-control" placeholder="Enter Address" />
+                                <span style="color:red;" id="msg-address" hidden></span>
                             </div>
                             <div class="form-group">
                                 <span style="color:black;">City</span>
                                 <input type="text" title="City" name="city" id="city" class="form-control" placeholder="Enter City Name" />
+                                <span style="color:red;" id="msg-city" hidden></span>
                             </div>
                             <div class="form-group">
                                 <span style="color:black;">Pin Code</span>
-                                <input type="number" title="Pin Code" name="pincode" id="pincode" class="form-control" placeholder="Enter Pin Code" />
+                                <input type="number" title="Pin Code" name="pincode" id="pincode" onkeyup="Validate(this)" class="form-control" placeholder="Enter Pin Code" />
+                                <span style="color:red;" id="msg-pincode" hidden></span>
                             </div>
                             <div class="form-group">
                                 <input type="submit" onclick="registeruser()" value="Register" class="btn btn-success py-3 px-5">
@@ -195,6 +206,22 @@
             IsDeleted: false,
 
         };
+        let isValid = true;
+        if (Validate({ id: 'r-username', value: data.UserName }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'r-password', value: data.Password }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'confirm-password', value: data.ConfirmPassword }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'firstname', value: data.FirstName }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'lastname', value: data.LastName }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'gender', value: data.Gender }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'mobileno', value: data.MobileNo }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'emailid', value: data.EmailId }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'address', value: data.Address }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'city', value: data.City }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'pincode', value: data.PinCode }) == false && isValid == true) isValid = false;
+        if (isValid == false) {
+            showErrorMsg('Please fill the required fields');
+            return;
+        }
 
         $.post("/User/RegisterUser", { data: data })
             .done(function (res) {
@@ -237,6 +264,33 @@
             errmsg.hidden = false;
             errmsg.innerHTML = 'Password not matched!';
         }
+    }
+
+    function Validate(ev) {
+        let msgelement = document.getElementById('msg-' + ev.id);
+        if (ev.id == 'r-username') {
+            msgelement.hidden = validation.isNotEmpty(ev.value);
+            msgelement.innerHTML = 'Username is mandatory';
+        } else if (ev.id == 'r-password') {
+            msgelement.hidden = validation.isPassword(ev.value);
+            msgelement.innerHTML = 'Password must contain minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character';
+        } else if (ev.id == 'confirm-password') {
+            msgelement.hidden = ev.value != undefined && ev.value != '' && ev.value != null;
+            msgelement.innerHTML = 'Password not matched!';
+        } else if (ev.id == 'gender') {
+            msgelement.hidden = $("input[type='radio'][name='gender']:checked").val() != undefined && $("input[type='radio'][name='gender']:checked").val() != '' && $("input[type='radio'][name='gender']:checked").val() != null
+            msgelement.innerHTML = 'Select Gender';
+        } else if (ev.id == 'mobileno') {
+            msgelement.hidden = validation.isNumber(ev.value) && ev.value?.length != 10
+            msgelement.innerHTML = 'Enter Correct mobile number.';
+        } else if (ev.id == 'emailid') {
+            msgelement.hidden = validation.isEmailAddress(ev.value)
+            msgelement.innerHTML = 'Enter Correct email. Ex- myemail@domain.co';
+        } else if (ev.id == 'pincode') {
+            msgelement.hidden = !(validation.isNumber(ev.value) && ev.value?.length != 6);
+            msgelement.innerHTML = 'Only numbers allowed with 6 digit length';
+        }
+        return msgelement.hidden;
     }
 </script>
 

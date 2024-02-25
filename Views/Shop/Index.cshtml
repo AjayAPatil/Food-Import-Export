@@ -3,14 +3,14 @@
 }
 
 <section class="ftco-section">
-@*     <div class="container">
-        <div class="row justify-content-center mb-3 pb-3">
-            <div class="col-md-12 heading-section text-center ftco-animate">
-                <span class="subheading">Featured Products</span>
-                <h2 class="mb-4">Our Products</h2>
-                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-            </div>
-        </div>
+    @*     <div class="container">
+    <div class="row justify-content-center mb-3 pb-3">
+    <div class="col-md-12 heading-section text-center ftco-animate">
+    <span class="subheading">Featured Products</span>
+    <h2 class="mb-4">Our Products</h2>
+    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
+    </div>
+    </div>
     </div> *@
     <div class="container">
         <div class="row justify-content-center">
@@ -37,16 +37,16 @@
                         <div class="col-md-12 heading-section text-center ftco-animate">
                             <h2 class="mb-4">Items Not Found</h2>
                             <span class="subheading">Please try after some time.</span>
-                        <p>Our team working on it</p>
+                            <p>Our team working on it</p>
+                        </div>
                     </div>
                 </div>
-            </div>
             }
             @for (int i = 0; i < Model.productList.Count; i++)
             {
                 <div class="col-md-6 col-lg-3 ftco-animate">
                     <div class="product">
-                        <a href="#" class="img-prod">
+                        <a href="javascript:;" class="img-prod" onclick="window.location.href = '/Shop/Product?productId=@Model.productList[i].ProductId';">
                             <img class="img-fluid" src="@Model.productList[i]?.ImagesB64" alt="@Model.productList[i]?.ProductName">
                             <span class="status" @(@Model.productList[i]?.DiscountPercent > 0 ? "" : "hidden")>@Math.Round(Model.productList[i]?.DiscountPercent, 2).ToString("G29") %</span>
                             <div class="overlay"></div>
@@ -60,9 +60,6 @@
                             </div>
                             <div class="bottom-area d-flex px-3">
                                 <div class="m-auto d-flex">
-                                    <a href="/Shop" class="add-to-cart d-flex justify-content-center align-items-center text-center" title="View More">
-                                        <span><i class="ion-ios-menu"></i></span>
-                                    </a>
                                     <a href="javascript:;" id="ico-cart-@Model.productList[i].ProductId" onclick="addToCart(@Model.productList[i].ProductId)" class="buy-now d-flex justify-content-center align-items-center mx-1" title="Add To Kart">
                                         <span><i class="ion-ios-cart"></i></span>
                                     </a>

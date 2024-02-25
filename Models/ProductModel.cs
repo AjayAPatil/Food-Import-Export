@@ -12,6 +12,8 @@ namespace Food.Models
         public decimal SalePrice { get; set; }
         public decimal? DiscountPercent { get; set; }
         public int CategoryId { get; set; }
+        public int? AvailableQuantity { get; set; }
+        public string? AvailableQuantityUnit { get; set; }
         public int CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public bool IsDeleted { get; set; }
