@@ -1,6 +1,7 @@
 ﻿using Food.Models;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 
 namespace Food.Controllers
 {
@@ -249,13 +250,18 @@ namespace Food.Controllers
 			return View("Product", new { productList = productList, currentProduct = currentProduct });
         }
 
-        public IActionResult OrderProduct(int productId, int quantity)
+        public IActionResult OrderProduct(string products = "")
         {
-            if (productId == 0 && quantity == 0)
+            if (string.IsNullOrEmpty(products))
             {
                 return Index();
             }
-            string query = "select * from tbl_Products where isdeleted = 0 and ProductId=" + productId.ToString();
+            var currentProduct = JsonConvert.DeserializeObject<List<ProductOrdersModel>>(products);
+            if(currentProduct == null || currentProduct.Count <= 0)
+            {
+                return Index();
+            }
+            string query = "select * from tbl_Products where isdeleted = 0 and ProductId IN (" + string.Join(",", currentProduct.Select(a=> a.ProductId)) + ")";
 
             MySqlConnection connection = new()
             {
@@ -265,12 +271,12 @@ namespace Food.Controllers
             MySqlCommand command = new(query, connection);
             MySqlDataReader reader = command.ExecuteReader();
 
-            ProductModel? product = null;
+            List<ProductModel> productList = new List<ProductModel>();
             if (reader.HasRows)
             {
                 while (reader.Read())
                 {
-                     product = new()
+                    ProductModel product = new()
                     {
                         ProductId = reader.GetInt32("ProductId"),
                         ProductName = reader.GetString("ProductName"),
@@ -288,14 +294,15 @@ namespace Food.Controllers
                     {
                         product.ImagesB64 = "data:image/jpg;base64," + Convert.ToBase64String(product.Images);
                     }
+                    productList.Add(product);
                 }
             }
 
-            if (product == null)
+            if (productList.Count <= 0)
             {
                 return Index();
             }
-            return View("OrderProduct", new { currentProduct = product });
+            return View("OrderProduct", new { productList });
         }
     }
 }

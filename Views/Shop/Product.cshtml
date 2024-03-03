@@ -266,6 +266,12 @@
     }
 
     function orderItem() {
-        window.location.href = '/Shop/OrderProduct?productId=@Model.currentProduct.ProductId&quantity=' + $('#quantity').val()
+        let prod = JSON.stringify([
+            {
+                ProductId: @Model.currentProduct.ProductId,
+                quantity: $('#quantity').val()
+            }
+        ]);
+        window.location.href = '/Shop/OrderProduct?products=' + prod;
     }
 </script>

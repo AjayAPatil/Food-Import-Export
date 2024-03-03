@@ -1,60 +1,315 @@
 ﻿@{
-    ViewData["Title"] = "Shop Product";
+    ViewData["Title"] = "Order Product";
 }
 
 <section class="ftco-section">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-6 mb-5 ftco-animate">
-                <a href="@Model.currentProduct.ImagesB64" class="image-popup"><img src="@Model.currentProduct.ImagesB64" class="img-fluid" alt="@Model.currentProduct.ProductName" style="height: 100%;"></a>
-            </div>
-            <div class="col-lg-6 product-details pl-md-5 ftco-animate">
-                <h3>@Model.currentProduct.ProductName</h3>
-                <div class="rating d-flex">
-                    <p class="text-left mr-4">
-                        <a href="#" class="mr-2">5.0</a>
-                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                        <a href="#"><span class="ion-ios-star-outline"></span></a>
-                    </p>
-                    <p class="text-left mr-4">
-                        <a href="#" class="mr-2" style="color: #000;">100 <span style="color: #bbb;">Rating</span></a>
-                    </p>
-                    <p class="text-left">
-                        <a href="#" class="mr-2" style="color: #000;">500 <span style="color: #bbb;">Sold</span></a>
-                    </p>
-                </div>
-                <p class="price"><span>@Model.currentProduct.SalePrice ₹</span></p>
-                <p>
-                    @Model.currentProduct.Description
-                </p>
-                <div class="row mt-4">
-                    <div class="input-group col-md-8 d-flex mb-3">
-                        <span class="input-group-btn mr-2">
-                            <button type="button" class="quantity-left-minus btn" data-type="minus" data-field="" onclick="changeNumber('minus', 'quantity')">
-                                <i class="ion-ios-remove"></i>
-                            </button>
-                        </span>
-                        <input type="text" id="quantity" name="quantity" class="form-control input-number" onkeyup="checkNumber('quantity')" value="1" min="1" max="@Model.currentProduct.AvailableQuantity">
-                        <span class="input-group-btn ml-2">
-                            <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="" onclick="changeNumber('plus', 'quantity')">
-                                <i class="ion-ios-add"></i>
-                            </button>
-                            @Food.Common.FoodConstants.AvailableQuantityUnitList.Find(a=> a.Key == @Model.currentProduct.AvailableQuantityUnit)?.Value
-                        </span>
+        <div class="row justify-content-center">
+            <div class="col-xl-7 ftco-animate">
+                <form action="#" class="billing-form">
+                    <h3 class="mb-4 billing-heading">Billing Details</h3>
+                    <!--Login Form-->
+                    <!--If registerd login directly-->
+                    <div class="row align-items-end" id="login-form" hidden>
+                        <div class="col-md-12" id="login-form-register">
+                            <a href="javascript:;" onclick="document.getElementById('login-form').hidden = true; document.getElementById('register-user-form').hidden = false;"
+                            >Not Registred ? Click here to register..</a>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <span style="color:black;">User Name</span>
+                                <input type="text" title="User Name" value="Admin" name="username" id="username" class="form-control" placeholder="Enter User Name" />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <span style="color:black;">Password</span>
+                                <input type="password" title="Password" value="Pass@123" name="password" id="password" class="form-control" placeholder="Enter Password" />
+                            </div>
+                            </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <input type="submit" onclick="submitlogin()" value="Login" class="btn btn-success py-3 px-3">
+                            </div>
+                        </div>
                     </div>
-                    <div class="w-100"></div>
+                    <!--New user register form-->
+                    <!--If not registerd register new user-->
+                    <div class="row align-items-end" id="register-user-form">
+                        <div class="col-md-12" id="register-user-form-login">
+                            <a href="javascript:;" onclick="document.getElementById('login-form').hidden = false; document.getElementById('register-user-form').hidden = true;"
+                            >Already Registred ? Click here to login..</a>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <span style="color:black;">User Name</span>
+                                <input type="text" title="User Name" name="r-username" id="r-username" onkeyup="Validate(this)" class="form-control" placeholder="Enter User Name" />
+                                <span style="color:red;" id="msg-r-username" hidden></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Password</span>
+                                <input type="password" title="Password" name="r-password" id="r-password" onkeyup="Validate(this)" class="form-control" placeholder="Enter Password" />
+                                <span style="color:red;" id="msg-r-password" hidden></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Confirm Password</span>
+                                <input type="password" title="Confirm Password" name="confirm-password" id="confirm-password" onkeyup="confirmPwd()" class="form-control" placeholder="Enter Password Again" />
+                                <span style="color:red;" id="msg-confirm-password" hidden></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">First Name</span>
+                                <input type="text" title="First Name" name="firstname" id="firstname" class="form-control" placeholder="Enter First Name" />
+                                <span style="color:red;" id="msg-firstname" hidden></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Last Name</span>
+                                <input type="text" title="Last Name" name="lastname" id="lastname" class="form-control" placeholder="Enter Last Name" />
+                                <span style="color:red;" id="msg-lastname" hidden></span>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <span style="color:black;">Gender</span> <br />
+                                <input type="radio" id="male" name="gender" value="male"> Male &nbsp;&nbsp;
+                                <input type="radio" id="female" name="gender" value="female"> Female &nbsp;&nbsp;
+                                <input type="radio" id="other" name="gender" value="other"> Other
+                                <br />
+                                <span style="color:red;" id="msg-gender" hidden></span>
+                            </div>
+                        </div>
+                        <div class="w-100"></div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Mobile No.</span>
+                                <input type="number" title="Mobile No." name="mobileno" id="mobileno" onkeyup="Validate(this)" class="form-control" placeholder="Enter Mobile No." />
+                                <span style="color:red;" id="msg-mobileno" hidden></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Email Id</span>
+                                <input type="email" title="Email Id" name="emailid" id="emailid" onkeyup="Validate(this)" class="form-control" placeholder="Enter Email Id" />
+                                <span style="color:red;" id="msg-emailid" hidden></span>
+                            </div>
+                        </div>
+                        <div class="w-100"></div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Address</span>
+                                <input type="email" title="Address" name="address" id="address" class="form-control" placeholder="Enter Address" />
+                                <span style="color:red;" id="msg-address" hidden></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">City</span>
+                                <input type="text" title="City" name="city" id="city" class="form-control" placeholder="Enter City Name" />
+                                <span style="color:red;" id="msg-city" hidden></span>
+                            </div>
+                        </div>
+                        <div class="w-100"></div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Pin Code</span>
+                                <input type="number" title="Pin Code" name="pincode" id="pincode" onkeyup="Validate(this)" class="form-control" placeholder="Enter Pin Code" />
+                                <span style="color:red;" id="msg-pincode" hidden></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="radio">
+                                    <label class="mr-3"><input type="radio" name="optradio"> Create an Account? </label>
+                                    <label><input type="radio" name="optradio"> Ship to different address</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="w-100"></div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <input type="submit" onclick="registeruser()" value="Register" class="btn btn-success py-3 px-5">
+                                <input type="reset" onclick="resetregisteruser()" value="Reset" class="btn btn-secondary py-3 px-5">
+                            </div>
+                        </div>
+                    </div>
+                    <!--Logged in user registerd address details-->
+                    <div class="row align-items-end" id="address-label-form">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <table style="width:100%; color: black;">
+                                    <tr style="border-bottom: #c0bdbd 1px solid;">
+                                        <td>Mobile No.</td>
+                                        <td id="tbl-mobno"></td>
+                                    </tr>
+                                    <tr style="border-bottom: #c0bdbd 1px solid;">
+                                        <td>Email Id</td>
+                                        <td id="tbl-email"></td>
+                                    </tr>
+                                    <tr style="border-bottom: #c0bdbd 1px solid;">
+                                        <td>Address</td>
+                                        <td id="tbl-addr"></td>
+                                    </tr>
+                                    <tr style="border-bottom: #c0bdbd 1px solid;">
+                                        <td>City</td>
+                                        <td id="tbl-city"></td>
+                                    </tr>
+                                    <tr style="border-bottom: #c0bdbd 1px solid;">
+                                        <td>Pin Code</td>
+                                        <td id="tbl-pin"></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="col-md-12" id="register-user-form-login">
+                            <label style="cursor: pointer; color: #82ae46;" onchange="document.getElementById('address-form').hidden = document.getElementById('address-form').hidden !== true;">
+                                <input type="checkbox" name="optradio"> Ship to different address
+                            </label>
+                        </div>
+                    </div>
+                    <!--ship to different address-->
+                    <div class="row align-items-end" id="address-form" hidden>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Mobile No.</span>
+                                <input type="number" title="Mobile No." name="a-mobileno" id="a-mobileno" onkeyup="Validate(this)" class="form-control" placeholder="Enter Mobile No." />
+                                <span style="color:red;" id="msg-mobileno" hidden></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Alternate Mobile No.</span>
+                                <input type="number" title="Mobile No." name="a-mobileno" id="a-mobileno" onkeyup="Validate(this)" class="form-control" placeholder="Enter Mobile No." />
+                                <span style="color:red;" id="msg-mobileno" hidden></span>
+                            </div>
+                        </div>
+                        <div class="w-100"></div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Email Id</span>
+                                <input type="email" title="Email Id" name="a-emailid" id="a-emailid" onkeyup="Validate(this)" class="form-control" placeholder="Enter Email Id" />
+                                <span style="color:red;" id="msg-emailid" hidden></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Address</span>
+                                <input type="email" title="Address" name="a-address" id="a-address" class="form-control" placeholder="Enter Address" />
+                                <span style="color:red;" id="msg-address" hidden></span>
+                            </div>
+                        </div>
+                        <div class="w-100"></div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">City</span>
+                                <input type="text" title="City" name="a-city" id="a-city" class="form-control" placeholder="Enter City Name" />
+                                <span style="color:red;" id="msg-city" hidden></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Pin Code</span>
+                                <input type="number" title="Pin Code" name="a-pincode" id="a-pincode" onkeyup="Validate(this)" class="form-control" placeholder="Enter Pin Code" />
+                                <span style="color:red;" id="msg-pincode" hidden></span>
+                            </div>
+                        </div>
+                        <div class="w-100"></div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="radio">
+                                    <label class="mr-3"><input type="radio" name="optradio"> Create an Account? </label>
+                                    <label><input type="radio" name="optradio"> Ship to different address</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <input type="submit" onclick="registeruser()" value="Register" class="btn btn-success py-3 px-5">
+                                <input type="reset" onclick="resetregisteruser()" value="Reset" class="btn btn-secondary py-3 px-5">
+                            </div>
+                        </div>
+                    </div>
+                </form><!-- END -->
+            </div>
+            <div class="col-xl-5">
+                <div class="row mt-5 pt-3">
+                    <div class="col-md-12 d-flex mb-5">
+                        <div class="cart-detail cart-total p-3 p-md-4">
+                            <h3 class="billing-heading mb-4">Order Summary</h3>
+                            <p class="d-flex">
+                                <span style="font-weight: bold;">Item</span>
+                                <span style="font-weight: bold;">Quantity</span>
+                                <span style="font-weight: bold;">Rate</span>
+                                <span style="font-weight: bold;">Total</span>
+                            </p>
+                            @for (int i = 0; i < Model.productList.Count; i++) {
+                            <p class="d-flex">
+                                    <span>@Model.productList[i].ProductName</span>
+                                <span>50 kg</span>
+                                <span>$20.60</span>
+                                <span>$20.00</span>
+                            </p>
+                            }
+                            <p class="d-flex">
+                            </p>
+                            <p class="d-flex">
+                                <span>Delivery</span>
+                                <span></span>
+                                <span>$0.00</span>
+                                <span>$0.00</span>
+                            </p>
+                            <p class="d-flex">
+                                <span>Discount</span>
+                                <span></span>
+                                <span>$3.00</span>
+                                <span>$3.00</span>
+                            </p>
+                            <hr>
+                            <p class="d-flex total-price">
+                                <span>Total</span>
+                                <span></span>
+                                <span></span>
+                                <span>$17.60</span>
+                            </p>
+                        </div>
+                    </div>
                     <div class="col-md-12">
-                        <p style="color: #000;">@Model.currentProduct.AvailableQuantity @Model.currentProduct.AvailableQuantityUnit available</p>
+                        <div class="cart-detail p-3 p-md-4">
+                            <h3 class="billing-heading mb-4">Payment Method</h3>
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <div class="radio">
+                                        <label><input type="radio" name="optradio" class="mr-2"> Direct Bank Transfer</label>
+                                    </div>
+                                    <div class="radio">
+                                        <label><input type="radio" name="optradio" class="mr-2"> Cheque Payment</label>
+                                    </div>
+                                    <div class="radio">
+                                        <label><input type="radio" name="optradio" class="mr-2"> UPI</label>
+                                    </div>
+                                    <div class="radio">
+                                        <label><input type="radio" name="optradio" class="mr-2"> Cash On Delivery</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <div class="checkbox">
+                                        <label><input type="checkbox" value="" class="mr-2"> I have read and accept the terms and conditions</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <p><a href="#" class="btn btn-success py-3 px-4" style="width:100%;">Place an order</a></p>
+                        </div>
                     </div>
                 </div>
-                <p>
-                    <a href="javascript:;" id="ico-cart-@Model.currentProduct.ProductId" name="btn-cart-@Model.currentProduct.ProductId" onclick="addToCart(@Model.currentProduct.ProductId)" class="btn btn-primary py-3 px-5">Add to Cart</a>&emsp;
-                    <a href="cart.html" class="btn btn-success py-3 px-5">Order Now</a>
-                </p>
-            </div>
+            </div> <!-- .col-md-8 -->
         </div>
     </div>
 </section>
@@ -67,135 +322,24 @@
             $('#' + id).val(inputVal.replace(/\D/gm, ""));
         }
     }
-    function changeNumber(action, id) {
-        let inputval = Number($('#' + id).val());
-        let newval = inputval + ((action == 'minus') ? -1 : 1);
-        newval = newval < 1 ? 1 : newval;
-        $('#' + id).val(newval)
-    }
 
-    setTimeout(getUserProducts, 500);
-
-    function getUserProducts() {
+    setTimeout(onPageLoad, 500);
+    function onPageLoad() {
         var user = localStorage.getItem("UserInfo");
         if (user) {
             let userdata = JSON.parse(user);
 
-            $.get("/Shop/GetUserProducts?userid=" + userdata.userId)
-                .done(function (res) {
-                    console.log(res);
-                    if (res?.status == "success") {
-                        res.data?.forEach(row => {
-                            if (row.savedAs == 'Favourites') {
-                                let heart = document.getElementById('ico-favourite-' + row.productId);
-                                if (heart) {
-                                    heart.style.color = 'red';
-                                    heart.title = 'Added to Favourites.'
-                                }
-                            } else if (row.savedAs == 'Cart') {
-                                let heart = document.getElementById('ico-cart-' + row.productId);
-                                if (heart) {
-                                    heart.style.color = 'black';
-                                    heart.title = 'Added to Cart';
-                                    if (heart.name == 'btn-cart-' + row.productId) {
-                                        heart.innerText = 'Added to Cart';
-                                        heart.style.color = 'white';
-                                    }
-                                }
-                            }
-                        });
-                    }
-                })
-                .fail(function () {
-                });
-        }
-    }
+            document.getElementById('tbl-mobno').innerText = userdata.mobileNo;
+            document.getElementById('tbl-email').innerText = userdata.emailId;
+            document.getElementById('tbl-addr').innerText = userdata.address;
+            document.getElementById('tbl-city').innerText = userdata.city;
+            document.getElementById('tbl-pin').innerText = userdata.pinCode;
 
-    function addToFavourite(productId) {
-        var user = localStorage.getItem("UserInfo");
-        if (user) {
-            let userdata = JSON.parse(user);
-
-            let data = {
-                ProductId: productId,
-                SavedAs: 'Favourites',
-                CreatedBy: userdata.userId,
-                IsDeleted: false
-            }
-
-            $.post("/Shop/AddToFavourites", { userProducts: data })
-                .done(function (res) {
-                    if (res?.status == "success") {
-                        showSuccessMsg(res.message);
-                        if (res.data?.isDeleted == true) {
-                            document.getElementById('ico-favourite-' + productId).style.color = 'white';
-                            document.getElementById('ico-favourite-' + productId).title = 'Add to Favourites.';
-                        } else {
-                            document.getElementById('ico-favourite-' + productId).style.color = 'red';
-                            document.getElementById('ico-favourite-' + productId).title = 'Added to Favourites.';
-                        }
-                    } else if (res?.status) {
-                        showErrorMsg(res.message);
-                    } else {
-                        showErrorMsg("error");
-                    }
-                })
-                .fail(function () {
-                    showErrorMsg("error");
-                });
+            document.getElementById('login-form').hidden = true;
+            document.getElementById('register-user-form').hidden = true;
         } else {
-            showInfoMsg('Please login!');
-            // setTimeout(function () {
-            //     window.location.href = '/User/Login';
-            // }, 500)
-        }
-    }
-
-    function addToCart(productId) {
-        var user = localStorage.getItem("UserInfo");
-        if (user) {
-            let userdata = JSON.parse(user);
-
-            let data = {
-                ProductId: productId,
-                SavedAs: 'Cart',
-                CreatedBy: userdata.userId,
-                IsDeleted: false
-            }
-
-            $.post("/Shop/AddToFavourites", { userProducts: data })
-                .done(function (res) {
-                    if (res?.status == "success") {
-                        showSuccessMsg(res.message);
-                        if (res.data?.isDeleted == true) {
-                            document.getElementById('ico-cart-' + productId).style.color = 'white';
-                            document.getElementById('ico-cart-' + productId).title = 'Add to Cart.';
-                            if (document.getElementById('ico-cart-' + productId).name == 'btn-cart-' + productId) {
-                                document.getElementById('ico-cart-' + productId).innerText = 'Add to Cart';
-                            }
-                        } else {
-                            document.getElementById('ico-cart-' + productId).title = 'Added to Cart.';
-                            if (document.getElementById('ico-cart-' + productId).name == 'btn-cart-' + productId) {
-                                document.getElementById('ico-cart-' + productId).innerText = 'Added to Cart';
-                                document.getElementById('ico-cart-' + productId).style.color = 'white';
-                            } else {
-                                document.getElementById('ico-cart-' + productId).style.color = 'black';
-                            }
-                        }
-                    } else if (res?.status) {
-                        showErrorMsg(res.message);
-                    } else {
-                        showErrorMsg("error");
-                    }
-                })
-                .fail(function () {
-                    showErrorMsg("error");
-                });
-        } else {
-            showInfoMsg('Please login!');
-            // setTimeout(function () {
-            //     window.location.href = '/User/Login';
-            // }, 500)
+            document.getElementById('login-form-register').hidden = false;
+            document.getElementById('register-user-form-login').hidden = false;
         }
     }
 </script>
