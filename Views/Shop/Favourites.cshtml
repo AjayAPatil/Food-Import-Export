@@ -1,0 +1,146 @@
+﻿@{
+    ViewData["Title"] = "Favourites Page";
+}
+
+<section class="ftco-section ftco-cart">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12 ftco-animate">
+				<div class="cart-list">
+					<table class="table" id="tbl-prod">
+						<thead class="thead-primary">
+							<tr class="text-center">
+								<th>&nbsp;</th>
+								<th>Product List</th>
+								<th>&nbsp;</th>
+								<th>Price</th>
+								<th>Quantity</th>
+								<th>Total</th>
+							</tr>
+						</thead>
+						<tbody id="tbl-prod-body">
+							<tr class="text-center" id="tbl-prod-row" hidden>
+								<td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
+
+								<td class="image-prod"><div class="img" style="background-image:url(/images/product-1.jpg);"></div></td>
+
+								<td class="product-name">
+									<h3>Bell Pepper</h3>
+									<p>Far far away, behind the word mountains, far from the countries</p>
+								</td>
+
+								<td class="price">$4.90</td>
+
+								<td class="quantity">
+									<div class="input-group mb-3">
+										<input type="text" name="quantity" class="quantity form-control input-number" value="1" min="1" max="100">
+									</div>
+								</td>
+
+								<td class="total">$4.90</td>
+							</tr><!-- END TR-->
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="col-md-12 ftco-animate">
+				<p>
+				<a href="javascript:;" onclick="orderItem()" class="btn btn-success py-3 px-5">Order Now</a>
+				</p>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script>
+	function checkNumber(id, rowno) {
+		let inputVal = $('#' + id).val();
+		if (validation.isNumber(inputVal) == false) {
+			showWarningMsg('Only Numbers Allowed');
+			$('#' + id).val(inputVal.replace(/\D/gm, ""));
+			updateTotalPrice($('#' + id).val(), rowno);
+		}
+	}
+	function changeNumber(action, id, rowno) {
+		let inputval = Number($('#' + id).val());
+		let newval = inputval + ((action == 'minus') ? -1 : 1);
+		newval = newval < 1 ? 1 : newval;
+		$('#' + id).val(newval);
+		updateTotalPrice(newval, rowno);
+	}
+	function updateTotalPrice(newval, rowno) {
+		let price = document.getElementById('price-' + rowno);
+		let total = document.getElementById('total-price-' + rowno);
+		total.innerText = Number(price.innerText) * Number(newval);
+	}
+
+	setTimeout(onPageLoad, 500);
+	function onPageLoad() {
+		var user = localStorage.getItem("UserInfo");
+		if (user) {
+			let userdata = JSON.parse(user);
+			getUserProducts(userdata.userId)
+	
+		} else {
+		}
+	}
+
+	let FavouritesList = [];
+	function getUserProducts(userId) {
+			$.get("/Shop/GetUserProducts?userid=" + userId)
+				.done(function (res) {
+					console.log(res);
+					if (res?.status == "success") {
+					var prodTblRow = document.getElementById("tbl-prod-body");
+						var htmlData = "";
+						res.data.forEach((row, id) => {
+							FavouritesList.push({ id: id, prodId: row.product.productId });
+						htmlData += `
+							<tr class="text-center" id="tbl-prod-row-` + id + `">
+								<td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
+								<td class="image-prod"><div class="img" style="background-image:url('` + row.product.imagesB64 + `');"></div></td>
+								<td class="product-name">
+									<h3>` + row.product.productName + `</h3>
+									<p>` + row.product.description + `</p>
+								</td>
+
+								<td class="price">₹<span id="price-` + id + `">` + row.product.salePrice + `</span></td>
+
+								<td class="quantity">
+									<div class="input-group d-flex mb-3">
+										<span class="input-group-btn mr-2">
+											<button type="button" class="quantity-left-minus btn" data-type="minus" data-field="" onclick="changeNumber('minus', 'quantity` + id + `',` + id + `)">
+											<i class="ion-ios-remove"></i>
+											</button>
+										</span>
+											<input type="text" id="quantity` + id + `" name="quantity` + id + `" class="form-control input-number" onkeyup="checkNumber('quantity` + id + `',` + id + `)" value="1" min="1" max="` + row.product.availableQuantity + `" />
+										<span class="input-group-btn ml-2">
+											<button type="button" class="quantity-right-plus btn" data-type="plus" data-field="" onclick="changeNumber('plus', 'quantity` + id + `',` + id + `)">
+											<i class="ion-ios-add"></i>
+											</button>
+										` + row.product.availableQuantityUnit + `
+										</span>
+									</div>
+								</td>
+
+								<td class="total">₹<span id="total-price-` + id + `">` + row.product.salePrice + `</span></td>
+								</tr><!-- END TR-->`;
+						});
+						prodTblRow.innerHTML = htmlData;
+					}
+				})
+				.fail(function () {
+				});	
+	}
+
+	function orderItem() {
+		let prod = [];
+		FavouritesList.forEach(row => {
+			prod.push({
+				ProductId: row.prodId,
+				quantity: $('#quantity' + row.id).val()
+			})
+		})
+		window.location.href = '/Shop/OrderProduct?products=' + JSON.stringify(prod);
+	}
+</script>

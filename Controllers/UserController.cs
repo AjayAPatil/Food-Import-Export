@@ -1,6 +1,7 @@
 ﻿using Food.Models;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using Newtonsoft.Json;
 
 namespace Food.Controllers
 {
@@ -8,10 +9,10 @@ namespace Food.Controllers
     {
         private readonly IConfiguration _config;
 
-        public UserController(IConfiguration configuration)
+		public UserController(IConfiguration configuration)
         {
             _config = configuration;
-        }
+		}
         public IActionResult LoginPage()
         {
             return View("Login");
@@ -65,7 +66,6 @@ namespace Food.Controllers
                 }
             }
 
-
             if (user == null)
             {
                 response.Status = "error";
@@ -87,7 +87,7 @@ namespace Food.Controllers
                     user,
                     Dashboard = user.Role == "Admin" ? "/Admin" : "/Home"
                 };
-            }
+			}
             else
             {
                 response.Status = "fail";

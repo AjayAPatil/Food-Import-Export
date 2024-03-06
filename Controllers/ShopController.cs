@@ -8,10 +8,11 @@ namespace Food.Controllers
     public class ShopController : Controller
     {
         private readonly IConfiguration _config;
-        public ShopController(IConfiguration config)
+
+		public ShopController(IConfiguration config)
         {
             _config = config;
-        }
+		}
 
         public IActionResult Index(int category = 0)
         {
@@ -70,7 +71,9 @@ namespace Food.Controllers
                 return response;
             }
 
-            string query = "select * from tbl_userproducts where CreatedBy = @CreatedBy and IsDeleted = 0";
+            string query = "select p.ProductId, p.ProductName, p.Images, p.Description, p.SalePrice, up.SavedAs, up.CreatedBy, p.AvailableQuantity, p.AvailableQuantityUnit " +
+                "from tbl_userproducts as up join tbl_products p on up.ProductId = p.ProductId " +
+				"where up.IsDeleted = 0 and up.CreatedBy = @CreatedBy";
 
             MySqlConnection connection = new()
             {
@@ -86,16 +89,28 @@ namespace Food.Controllers
                 List<UserProductsModel> userProductList = new List<UserProductsModel>();
                 while (reader.Read())
                 {
-                    userProductList.Add(new UserProductsModel()
+                    var obj = new UserProductsModel()
                     {
-                        UserProductId = reader.GetInt32("UserProductId"),
                         ProductId = reader.GetInt32("ProductId"),
                         CreatedBy = reader.GetInt32("CreatedBy"),
                         SavedAs = reader.GetString("SavedAs"),
-                        IsDeleted = reader.GetBoolean("IsDeleted"),
-                        CreatedOn = reader.GetDateTime("CreatedOn"),
-                    });
-                }
+                        Product = new ProductModel
+						{
+							ProductId = reader.GetInt32("ProductId"),
+                            ProductName = reader.GetString("ProductName"),
+							Images = reader["Images"] == null || reader["Images"] == DBNull.Value ? Array.Empty<byte>() : (byte[])reader["Images"],
+							Description = reader.GetString("Description"),
+							SalePrice = reader.GetDecimal("SalePrice"),
+							AvailableQuantity = reader["AvailableQuantity"] != DBNull.Value ? Convert.ToInt32(reader["AvailableQuantity"]) : null,
+							AvailableQuantityUnit = reader["AvailableQuantityUnit"] != DBNull.Value ? Convert.ToString(reader["AvailableQuantityUnit"]) : null,
+						}
+                    };
+					if (obj.Product.Images != null && obj.Product.Images?.Length > 0)
+					{
+						obj.Product.ImagesB64 = "data:image/jpg;base64," + Convert.ToBase64String(obj.Product.Images);
+					}
+					userProductList.Add(obj);
+				}
                 reader.Close();
 
                 response.Status = "success";
@@ -303,6 +318,15 @@ namespace Food.Controllers
                 return Index();
             }
             return View("OrderProduct", new { productList });
+        }
+
+        public IActionResult Favourites()
+		{
+			return View();
+        }
+        public IActionResult Cart()
+        {
+            return View();
         }
     }
 }

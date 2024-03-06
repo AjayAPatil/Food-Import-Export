@@ -8,5 +8,6 @@
         public int CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public bool IsDeleted { get; set; }
+        public ProductModel? Product { get; set; }
     }
 }
