@@ -239,6 +239,7 @@
             </div>
             <div class="col-xl-5">
                 <div class="row mt-5 pt-3">
+                    <!--Order Summary-->
                     <div class="col-md-12 d-flex mb-5">
                         <div class="cart-detail cart-total p-3 p-md-4">
                             <h3 class="billing-heading mb-4">Order Summary</h3>
@@ -250,10 +251,10 @@
                             </p>
                             @for (int i = 0; i < Model.productList.Count; i++) {
                             <p class="d-flex">
-                                    <span>@Model.productList[i].ProductName</span>
-                                <span>50 kg</span>
-                                <span>$20.60</span>
-                                <span>$20.00</span>
+                                    <span>@Model.productList[i].Product.ProductName</span>
+                                    <span>@Model.productList[i].Quantity @Model.productList[i].QuantityUnit</span>
+                                    <span>₹@Model.productList[i].Product.MRPrice</span>
+                                    <span>₹@Model.productList[i].Amount</span>
                             </p>
                             }
                             <p class="d-flex">
@@ -261,24 +262,25 @@
                             <p class="d-flex">
                                 <span>Delivery</span>
                                 <span></span>
-                                <span>$0.00</span>
-                                <span>$0.00</span>
+                                <span></span>
+                                <span>₹0.00</span>
                             </p>
                             <p class="d-flex">
                                 <span>Discount</span>
                                 <span></span>
-                                <span>$3.00</span>
-                                <span>$3.00</span>
+                                <span></span>
+                                <span>- ₹@Model.Discount</span>
                             </p>
                             <hr>
                             <p class="d-flex total-price">
                                 <span>Total</span>
                                 <span></span>
                                 <span></span>
-                                <span>$17.60</span>
+                                <span>₹@Model.Total</span>
                             </p>
                         </div>
                     </div>
+                    <!--Payment Method-->
                     <div class="col-md-12">
                         <div class="cart-detail p-3 p-md-4">
                             <h3 class="billing-heading mb-4">Payment Method</h3>

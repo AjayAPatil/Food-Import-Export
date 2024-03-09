@@ -87,7 +87,7 @@
 
 	let FavouritesList = [];
 	function getUserProducts(userId) {
-			$.get("/Shop/GetUserProducts?userid=" + userId)
+		$.get("/Shop/GetUserProducts?userid=" + userId + "&productSavedAs=Favourites")
 				.done(function (res) {
 					console.log(res);
 					if (res?.status == "success") {
@@ -97,7 +97,7 @@
 							FavouritesList.push({ id: id, prodId: row.product.productId });
 						htmlData += `
 							<tr class="text-center" id="tbl-prod-row-` + id + `">
-								<td class="product-remove"><a href="#"><span class="ion-ios-close"></span></a></td>
+								<td class="product-remove"><a href="javascript:;" onclick="removeFromFavourite(` + row.product.productId + `)" title="Remove from favourites"><span class="ion-ios-close"></span></a></td>
 								<td class="image-prod"><div class="img" style="background-image:url('` + row.product.imagesB64 + `');"></div></td>
 								<td class="product-name">
 									<h3>` + row.product.productName + `</h3>
@@ -132,6 +132,42 @@
 				.fail(function () {
 				});	
 	}
+
+	function removeFromFavourite(productId) {
+		var user = localStorage.getItem("UserInfo");
+		if (user) {
+			let userdata = JSON.parse(user);
+
+			let data = {
+				ProductId: productId,
+				SavedAs: 'Favourites',
+				CreatedBy: userdata.userId,
+				IsDeleted: true
+			}
+
+			$.post("/Shop/AddToFavourites", { userProducts: data })
+				.done(function (res) {
+					if (res?.status == "success") {
+						showSuccessMsg(res.message);
+
+						getUserProducts(userdata.userId);
+					} else if (res?.status) {
+						showErrorMsg(res.message);
+					} else {
+						showErrorMsg("error");
+					}
+				})
+				.fail(function () {
+					showErrorMsg("error");
+				});
+		} else {
+			showInfoMsg('Please login!');
+			// setTimeout(function () {
+			//     window.location.href = '/User/Login';
+			// }, 500)
+		}
+	}
+
 
 	function orderItem() {
 		let prod = [];

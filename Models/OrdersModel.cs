@@ -19,8 +19,10 @@
         public int ProductId { get; set; }
         public int Quantity { get; set; }
         public string QuantityUnit { get; set; }
+        public decimal Amount { get; set; }
         public int CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public bool IsDeleted { get; set; }
+        public ProductModel? Product { get; set; }
     }
 }

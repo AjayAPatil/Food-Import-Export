@@ -61,7 +61,7 @@ namespace Food.Controllers
             return View("Index", new { productList = productList, categoryList = categories, categoryId  = category });
         }
 
-        public ResponseModel GetUserProducts(int userid)
+        public ResponseModel GetUserProducts(int userid, string? productSavedAs = "")
         {
             ResponseModel response = new();
             if (userid < 0)
@@ -75,6 +75,11 @@ namespace Food.Controllers
                 "from tbl_userproducts as up join tbl_products p on up.ProductId = p.ProductId " +
 				"where up.IsDeleted = 0 and up.CreatedBy = @CreatedBy";
 
+            if (!string.IsNullOrEmpty(productSavedAs))
+            {
+                query += " and up.SavedAs = @SavedAs";
+            }
+
             MySqlConnection connection = new()
             {
                 ConnectionString = _config.GetConnectionString("DefaultConnection")
@@ -82,6 +87,7 @@ namespace Food.Controllers
             connection.Open();
             MySqlCommand command = new(query, connection);
             command.Parameters.AddWithValue("@CreatedBy", userid);
+            command.Parameters.AddWithValue("@SavedAs", productSavedAs);
             MySqlDataReader reader = command.ExecuteReader();
 
             if (reader.HasRows)
@@ -271,12 +277,12 @@ namespace Food.Controllers
             {
                 return Index();
             }
-            var currentProduct = JsonConvert.DeserializeObject<List<ProductOrdersModel>>(products);
-            if(currentProduct == null || currentProduct.Count <= 0)
+            var currentProductList = JsonConvert.DeserializeObject<List<ProductOrdersModel>>(products);
+            if(currentProductList == null || currentProductList.Count <= 0)
             {
                 return Index();
             }
-            string query = "select * from tbl_Products where isdeleted = 0 and ProductId IN (" + string.Join(",", currentProduct.Select(a=> a.ProductId)) + ")";
+            string query = "select * from tbl_Products where isdeleted = 0 and ProductId IN (" + string.Join(",", currentProductList.Select(a=> a.ProductId)) + ")";
 
             MySqlConnection connection = new()
             {
@@ -286,7 +292,8 @@ namespace Food.Controllers
             MySqlCommand command = new(query, connection);
             MySqlDataReader reader = command.ExecuteReader();
 
-            List<ProductModel> productList = new List<ProductModel>();
+            List<ProductOrdersModel> productList = new List<ProductOrdersModel>();
+            decimal Total = 0M, Discount = 0M;
             if (reader.HasRows)
             {
                 while (reader.Read())
@@ -303,13 +310,18 @@ namespace Food.Controllers
                         AvailableQuantityUnit = reader["AvailableQuantityUnit"] != DBNull.Value ? Convert.ToString(reader["AvailableQuantityUnit"]) : null,
                         CreatedBy = reader.GetInt32("CreatedBy"),
                         CreatedOn = reader.GetDateTime("CreatedOn"),
-                        Images = reader["Images"] == null ? Array.Empty<byte>() : (byte[])reader["Images"]
                     };
-                    if (product.Images != null)
+                    var currentProduct = currentProductList.Find(a => a.ProductId == product.ProductId) ?? new ProductOrdersModel();
+                    productList.Add(new ProductOrdersModel
                     {
-                        product.ImagesB64 = "data:image/jpg;base64," + Convert.ToBase64String(product.Images);
-                    }
-                    productList.Add(product);
+                        ProductId = product.ProductId,
+                        Quantity = currentProduct.Quantity,
+                        QuantityUnit = product.AvailableQuantityUnit ?? "",
+                        Amount = currentProduct.Quantity * product.MRPrice,
+                        Product = product,
+                    });
+                    Discount = Discount + ((product.MRPrice - product.SalePrice) * currentProduct.Quantity);
+                    Total += (product.SalePrice * currentProduct.Quantity);
                 }
             }
 
@@ -317,7 +329,7 @@ namespace Food.Controllers
             {
                 return Index();
             }
-            return View("OrderProduct", new { productList });
+            return View("OrderProduct", new { productList, Discount, Total });
         }
 
         public IActionResult Favourites()
