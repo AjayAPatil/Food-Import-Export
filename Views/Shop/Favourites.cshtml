@@ -10,9 +10,9 @@
 					<table class="table" id="tbl-prod">
 						<thead class="thead-primary">
 							<tr class="text-center">
-								<th>&nbsp;</th>
-								<th>Product List</th>
-								<th>&nbsp;</th>
+								<th>Action</th>
+								<th>Product Image</th>
+								<th>Product Name</th>
 								<th>Price</th>
 								<th>Quantity</th>
 								<th>Total</th>
@@ -101,7 +101,7 @@
 								<td class="image-prod"><div class="img" style="background-image:url('` + row.product.imagesB64 + `');"></div></td>
 								<td class="product-name">
 									<h3>` + row.product.productName + `</h3>
-									<p>` + row.product.description + `</p>
+									<p hidden>` + row.product.description + `</p>
 								</td>
 
 								<td class="price">₹<span id="price-` + id + `">` + row.product.salePrice + `</span></td>

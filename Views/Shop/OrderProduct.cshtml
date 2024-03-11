@@ -123,19 +123,11 @@
                                 <span style="color:red;" id="msg-pincode" hidden></span>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <div class="radio">
-                                    <label class="mr-3"><input type="radio" name="optradio"> Create an Account? </label>
-                                    <label><input type="radio" name="optradio"> Ship to different address</label>
-                                </div>
-                            </div>
-                        </div>
                         <div class="w-100"></div>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <input type="submit" onclick="registeruser()" value="Register" class="btn btn-success py-3 px-5">
-                                <input type="reset" onclick="resetregisteruser()" value="Reset" class="btn btn-secondary py-3 px-5">
+                                <input type="button" onclick="registeruser()" value="Register" class="btn btn-success py-3 px-5">
+                                <input type="button" onclick="resetregisteruser()" value="Reset" class="btn btn-secondary py-3 px-5">
                             </div>
                         </div>
                     </div>
@@ -287,27 +279,27 @@
                             <div class="form-group">
                                 <div class="col-md-12">
                                     <div class="radio">
-                                        <label><input type="radio" name="optradio" class="mr-2"> Direct Bank Transfer</label>
+                                        <label><input type="radio" name="payment-method" class="mr-2"> Direct Bank Transfer</label>
                                     </div>
                                     <div class="radio">
-                                        <label><input type="radio" name="optradio" class="mr-2"> Cheque Payment</label>
+                                        <label><input type="radio" name="payment-method" class="mr-2"> Cheque Payment</label>
                                     </div>
                                     <div class="radio">
-                                        <label><input type="radio" name="optradio" class="mr-2"> UPI</label>
+                                        <label><input type="radio" name="payment-method" class="mr-2"> UPI</label>
                                     </div>
                                     <div class="radio">
-                                        <label><input type="radio" name="optradio" class="mr-2"> Cash On Delivery</label>
+                                        <label><input type="radio" name="payment-method" class="mr-2"> Cash On Delivery</label>
                                     </div>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-md-12">
                                     <div class="checkbox">
-                                        <label><input type="checkbox" value="" class="mr-2"> I have read and accept the terms and conditions</label>
+                                        <label><input type="checkbox" name="term-cond" id="term-cond" value="" class="mr-2"> I have read and accept the terms and conditions</label>
                                     </div>
                                 </div>
                             </div>
-                            <p><a href="#" class="btn btn-success py-3 px-4" style="width:100%;">Place an order</a></p>
+                            <p><a href="javascript:;" onclick="placeOrder()" class="btn btn-success py-3 px-4" style="width:100%;">Place an order</a></p>
                         </div>
                     </div>
                 </div>
@@ -340,6 +332,203 @@
             document.getElementById('login-form').hidden = true;
             document.getElementById('register-user-form').hidden = true;
         } else {
+            document.getElementById('login-form-register').hidden = false;
+            document.getElementById('register-user-form-login').hidden = false;
+            document.getElementById('address-label-form').hidden = true;
+        }
+    }
+
+    function registeruser() {
+        var data = {
+            UserName: $('#r-username').val(),
+            Password: $('#r-password').val(),
+            ConfirmPassword: $('#confirm-password').val(),
+            FirstName: $('#firstname').val(),
+            LastName: $('#lastname').val(),
+            Gender: $("input[type='radio'][name='gender']:checked").val() ?? '',
+            MobileNo: $('#mobileno').val(),
+            EmailId: $('#emailid').val(),
+            Address: $('#address').val(),
+            City: $('#city').val(),
+            PinCode: $('#pincode').val(),
+            Role: 'Customer',
+            IsActive: true,
+            IsDeleted: false,
+
+        };
+        let isValid = true;
+        if (Validate({ id: 'r-username', value: data.UserName }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'r-password', value: data.Password }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'confirm-password', value: data.ConfirmPassword }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'firstname', value: data.FirstName }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'lastname', value: data.LastName }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'gender', value: data.Gender }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'mobileno', value: data.MobileNo }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'emailid', value: data.EmailId }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'address', value: data.Address }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'city', value: data.City }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'pincode', value: data.PinCode }) == false && isValid == true) isValid = false;
+        if (isValid == false) {
+            showErrorMsg('Please fill the required fields');
+            return;
+        }
+
+        $.post("/User/RegisterUser", { data: data })
+            .done(function (res) {
+                if (res?.status == "success") {
+                    showSuccessMsg(res.message);
+                    $('#username').val(data.UserName);
+                    $('#password').val(data.Password);
+
+                    setTimeout(submitlogin(), 500);
+                    resetregisteruser();
+                } else if (res?.status) {
+                    showErrorMsg(res.message);
+                } else {
+                    showErrorMsg("error");
+                }
+            })
+            .fail(function () {
+                showErrorMsg("error");
+            });
+    }
+
+    function resetregisteruser() {
+        $('#r-username').val('');
+        $('#r-password').val('');
+        $('#confirm-password').val('');
+        $('#firstname').val('');
+        $('#lastname').val('');
+        $("input[type='radio'][name='gender']").prop('checked', false);
+        $('#mobileno').val('');
+        $('#emailid').val('');
+        $('#address').val('');
+        $('#city').val('');
+        $('#pincode').val('');
+    }
+
+    function confirmPwd() {
+        var Password = $('#r-password').val();
+        var ConfirmPassword = $('#confirm-password').val();
+        var errmsg = document.getElementById('msg-confirm-password');
+        if (Password == ConfirmPassword) {
+            errmsg.hidden = true;
+        } else {
+            errmsg.hidden = false;
+            errmsg.innerHTML = 'Password not matched!';
+        }
+    }
+
+    function Validate(ev) {
+        let msgelement = document.getElementById('msg-' + ev.id);
+        if (ev.id == 'r-username') {
+            msgelement.hidden = validation.isNotEmpty(ev.value);
+            msgelement.innerHTML = 'Username is mandatory';
+        } else if (ev.id == 'r-password') {
+            msgelement.hidden = validation.isPassword(ev.value);
+            msgelement.innerHTML = 'Password must contain minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character';
+        } else if (ev.id == 'confirm-password') {
+            msgelement.hidden = ev.value != undefined && ev.value != '' && ev.value != null;
+            msgelement.innerHTML = 'Password not matched!';
+        } else if (ev.id == 'gender') {
+            msgelement.hidden = $("input[type='radio'][name='gender']:checked").val() != undefined && $("input[type='radio'][name='gender']:checked").val() != '' && $("input[type='radio'][name='gender']:checked").val() != null
+            msgelement.innerHTML = 'Select Gender';
+        } else if (ev.id == 'mobileno') {
+            msgelement.hidden = validation.isNumber(ev.value) && ev.value?.length != 10
+            msgelement.innerHTML = 'Enter Correct mobile number.';
+        } else if (ev.id == 'emailid') {
+            msgelement.hidden = validation.isEmailAddress(ev.value)
+            msgelement.innerHTML = 'Enter Correct email. Ex- myemail@domain.co';
+        } else if (ev.id == 'pincode') {
+            msgelement.hidden = !(validation.isNumber(ev.value) && ev.value?.length != 6);
+            msgelement.innerHTML = 'Only numbers allowed with 6 digit length';
+        }
+        return msgelement.hidden;
+    }
+
+    function submitlogin() {
+        var data = {
+            UserName: $('#username').val(),
+            Password: $('#password').val(),
+        };
+
+        $.post("/User/Login", { data: data })
+            .done(function (res) {
+                if (res?.status == "success") {
+                    showSuccessMsg(res.message);
+                    localStorage.setItem("UserInfo", JSON.stringify(res.data.user));
+
+                    setTimeout(window.location.reload(), 500);
+                } else if (res?.status) {
+                    showErrorMsg(res.message);
+                } else {
+                    showErrorMsg("error");
+                }
+            })
+            .fail(function () {
+                showErrorMsg("error");
+            });
+    }
+
+    function placeOrder() {
+        let paymentmetho = $("input[type='radio'][name='payment-method']:checked").val() ?? '';
+            if (paymentmetho == '') {
+                showErrorMsg('Please select payment method');
+                return;
+            }
+        let d = $('input[name="term-cond"]:checked');
+        //if ($("term-cond").val())
+        var user = localStorage.getItem("UserInfo");
+        if (user) {
+            let userdata = JSON.parse(user);
+            let data = {};
+            //shipping to current address
+            if (document.getElementById('address-form').hidden == true) {
+                data.MobileNo = userdata.mobileNo;
+                data.EmailId = userdata.emailId;
+                data.Address = userdata.address;
+                data.City = userdata.city;
+                data.PinCode = userdata.pinCode;
+            }
+            data.CreatedBy = userdata.userId;
+            data.CreatedOn = new Date();
+            data.IsDeleted = false;
+            data.ProductOrders = []
+
+            let prodLst = @Html.Raw(Json.Serialize(Model.productList));
+
+            prodLst.forEach(p => {
+                data.ProductOrders.push({
+                    ProductId: p.productId,
+                    Quantity: p.quantity,
+                    QuantityUnit: p.quantityUnit,
+                    Amount: p.amount,
+                    CreatedBy: userdata.userId,
+                    CreatedOn: new Date(),
+                    IsDeleted: false
+                });
+            })
+
+            $.post("/Shop/PlaceOrder", { orders: data })
+                .done(function (res) {
+                    if (res?.status == "success") {
+                        showSuccessMsg(res.message);
+                        console.log(res.data)
+                        // setTimeout(function () {
+                        //     window.location = "/Shop"
+                        // }, 500);
+                    } else if (res?.status) {
+                        showErrorMsg(res.message);
+                    } else {
+                        showErrorMsg("error");
+                    }
+                })
+                .fail(function () {
+                    showErrorMsg("error");
+                });
+
+        } else {
+            showInfoMsg('Please login first');
             document.getElementById('login-form-register').hidden = false;
             document.getElementById('register-user-form-login').hidden = false;
         }

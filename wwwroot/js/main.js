@@ -351,10 +351,18 @@ function onloadPage() {
     var lin = document.getElementById('user-login-btn');
     var lout = document.getElementById('user-logout-btn');
     var admn = document.getElementById('admin-btn');
+    var home = document.getElementById('home-btn');
+    var admnhome = document.getElementById('admin-home-btn');
+    var shop1 = document.getElementById('shop-btn1');
+    var shop2 = document.getElementById('shop-btn2');
 
     lin.style.display = 'block';
     lout.style.display = 'none';
     admn.style.display = 'none';
+    home.style.display = 'block';
+    admnhome.style.display = 'none';
+    shop1.style.display = 'none';
+    shop2.style.display = 'block';
     var jsonuserdata = localStorage.getItem("UserInfo");
     if (jsonuserdata) {
         var user = JSON.parse(jsonuserdata);
@@ -362,8 +370,14 @@ function onloadPage() {
         if (user) {
             lin.style.display = 'none'
             lout.style.display = 'block'
+            shop2.style.display = 'none';
+
             if (user.role == 'Admin') {
                 admn.style.display = 'block';
+                admnhome.style.display = 'block';
+                home.style.display = 'none';
+            } else {
+                shop1.style.display = 'block';
             }
         }
     }

@@ -67,16 +67,16 @@
 
             <div class="collapse navbar-collapse" id="ftco-nav">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active"><a href="/Home" class="nav-link">Home</a></li>
+                    <li class="nav-item active" id="home-btn"><a href="/Home" class="nav-link">Home</a></li>
+                    <li class="nav-item" id="admin-home-btn"><a href="/Admin" class="nav-link">Dashboard</a></li>
                     <li class="nav-item dropdown" id="admin-btn">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
                         <div class="dropdown-menu" aria-labelledby="dropdown01">
-                            <a class="dropdown-item" href="/Admin">Admin Dashboard</a>
                             <a class="dropdown-item" href="/Admin/Products">Products</a>
                             <a class="dropdown-item" href="/Admin/Categories">Categories</a>
                         </div>
                     </li>
-                    <li class="nav-item dropdown">
+                    <li class="nav-item dropdown" id="shop-btn1">
                         <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Shop</a>
                         <div class="dropdown-menu" aria-labelledby="dropdown04">
                             <a class="dropdown-item" href="/Shop">Shop</a>
@@ -84,6 +84,7 @@
                             <a class="dropdown-item" href="/Shop/Cart">Cart</a>
                         </div>
                     </li>
+                    <li class="nav-item" id="shop-btn2"><a href="/Shop" class="nav-link">Shop</a></li>
                     <li class="nav-item"><a href="/Home/About" class="nav-link">About</a></li>
                     @* <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li> *@
                     <li class="nav-item"><a href="/Home/Contact" class="nav-link">Contact</a></li>

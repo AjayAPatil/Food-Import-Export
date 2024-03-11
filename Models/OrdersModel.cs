@@ -11,6 +11,7 @@
         public int CreatedBy { get; set; }
         public DateTime CreatedOn { get; set; }
         public bool IsDeleted { get; set; }
+        public List<ProductOrdersModel>? ProductOrders { get; set; }
     }
     public class ProductOrdersModel
     {

@@ -1,6 +1,6 @@
 ﻿using Food.Models;
 using Microsoft.AspNetCore.Mvc;
-using MySql.Data.MySqlClient;
+using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 
 namespace Food.Controllers
@@ -23,13 +23,13 @@ namespace Food.Controllers
                 query += " and CategoryId = " + category.ToString();
             }
 
-            MySqlConnection connection = new()
+            SqlConnection connection = new()
             {
                 ConnectionString = _config.GetConnectionString("DefaultConnection")
             };
             connection.Open();
-            MySqlCommand command = new(query, connection);
-            MySqlDataReader reader = command.ExecuteReader();
+            SqlCommand command = new(query, connection);
+            SqlDataReader reader = command.ExecuteReader();
 
             List<ProductModel> productList = new();
             if (reader.HasRows)
@@ -38,16 +38,16 @@ namespace Food.Controllers
                 {
                     ProductModel product = new()
                     {
-                        ProductId = reader.GetInt32("ProductId"),
-                        ProductName = reader.GetString("ProductName"),
-                        Description = reader.GetString("Description"),
-                        MRPrice = reader.GetDecimal("MRPrice"),
-                        SalePrice = reader.GetDecimal("SalePrice"),
-                        DiscountPercent = reader.GetDecimal("DiscountPercent"),
+                        ProductId = Convert.ToInt32(reader["ProductId"]),
+                        ProductName = Convert.ToString(reader["ProductName"]) ?? "",
+                        Description = Convert.ToString(reader["Description"]) ?? "",
+                        MRPrice = Convert.ToDecimal(reader["MRPrice"]),
+                        SalePrice = Convert.ToDecimal(reader["SalePrice"]),
+                        DiscountPercent = Convert.ToDecimal(reader["DiscountPercent"]),
                         AvailableQuantity = reader["AvailableQuantity"] != DBNull.Value ? Convert.ToInt32(reader["AvailableQuantity"]) : null,
                         AvailableQuantityUnit = reader["AvailableQuantityUnit"] != DBNull.Value ? Convert.ToString(reader["AvailableQuantityUnit"]) : null,
-                        CreatedBy = reader.GetInt32("CreatedBy"),
-                        CreatedOn = reader.GetDateTime("CreatedOn"),
+                        CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
+                        CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
                         Images = reader["Images"] == null ? Array.Empty<byte>() : (byte[])reader["Images"]
                     };
                     if (product.Images != null)
@@ -80,15 +80,15 @@ namespace Food.Controllers
                 query += " and up.SavedAs = @SavedAs";
             }
 
-            MySqlConnection connection = new()
+            SqlConnection connection = new()
             {
                 ConnectionString = _config.GetConnectionString("DefaultConnection")
             };
             connection.Open();
-            MySqlCommand command = new(query, connection);
+            SqlCommand command = new(query, connection);
             command.Parameters.AddWithValue("@CreatedBy", userid);
             command.Parameters.AddWithValue("@SavedAs", productSavedAs);
-            MySqlDataReader reader = command.ExecuteReader();
+            SqlDataReader reader = command.ExecuteReader();
 
             if (reader.HasRows)
             {
@@ -97,16 +97,16 @@ namespace Food.Controllers
                 {
                     var obj = new UserProductsModel()
                     {
-                        ProductId = reader.GetInt32("ProductId"),
-                        CreatedBy = reader.GetInt32("CreatedBy"),
-                        SavedAs = reader.GetString("SavedAs"),
+                        ProductId = Convert.ToInt32(reader["ProductId"]),
+                        CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
+                        SavedAs = Convert.ToString(reader["SavedAs"]) ?? "",
                         Product = new ProductModel
 						{
-							ProductId = reader.GetInt32("ProductId"),
-                            ProductName = reader.GetString("ProductName"),
+							ProductId = Convert.ToInt32(reader["ProductId"]),
+                            ProductName = Convert.ToString(reader["ProductName"]) ?? "",
 							Images = reader["Images"] == null || reader["Images"] == DBNull.Value ? Array.Empty<byte>() : (byte[])reader["Images"],
-							Description = reader.GetString("Description"),
-							SalePrice = reader.GetDecimal("SalePrice"),
+							Description = Convert.ToString(reader["Description"]) ?? "",
+							SalePrice = Convert.ToDecimal(reader["SalePrice"]),
 							AvailableQuantity = reader["AvailableQuantity"] != DBNull.Value ? Convert.ToInt32(reader["AvailableQuantity"]) : null,
 							AvailableQuantityUnit = reader["AvailableQuantityUnit"] != DBNull.Value ? Convert.ToString(reader["AvailableQuantityUnit"]) : null,
 						}
@@ -160,16 +160,16 @@ namespace Food.Controllers
             }
             string query = "select * from tbl_userproducts where CreatedBy = @CreatedBy and SavedAs = @SavedAs and ProductId = @ProductId";
 
-            MySqlConnection connection = new()
+            SqlConnection connection = new()
             {
                 ConnectionString = _config.GetConnectionString("DefaultConnection")
             };
             connection.Open();
-            MySqlCommand command = new(query, connection);
+            SqlCommand command = new(query, connection);
             command.Parameters.AddWithValue("@ProductId", userProducts.ProductId);
             command.Parameters.AddWithValue("@SavedAs", userProducts.SavedAs);
             command.Parameters.AddWithValue("@CreatedBy", userProducts.CreatedBy);
-            MySqlDataReader reader = command.ExecuteReader();
+            SqlDataReader reader = command.ExecuteReader();
 
             if (reader.HasRows)
             {
@@ -178,12 +178,12 @@ namespace Food.Controllers
                 {
                     userProductList.Add(new UserProductsModel()
                     {
-                        UserProductId = reader.GetInt32("UserProductId"),
-                        ProductId = reader.GetInt32("ProductId"),
-                        CreatedBy = reader.GetInt32("CreatedBy"),
-                        SavedAs = reader.GetString("SavedAs"),
-                        IsDeleted = reader.GetBoolean("IsDeleted"),
-                        CreatedOn = reader.GetDateTime("CreatedOn"),
+                        UserProductId = Convert.ToInt32(reader["UserProductId"]),
+                        ProductId = Convert.ToInt32(reader["ProductId"]),
+                        CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
+                        SavedAs = Convert.ToString(reader["SavedAs"]) ?? "",
+                        IsDeleted = Convert.ToBoolean(reader["IsDeleted"]),
+                        CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
                     });
                 }
                 reader.Close();
@@ -228,13 +228,13 @@ namespace Food.Controllers
             }
 			string query = "select * from tbl_Products where isdeleted = 0";
 
-			MySqlConnection connection = new()
+			SqlConnection connection = new()
 			{
 				ConnectionString = _config.GetConnectionString("DefaultConnection")
 			};
 			connection.Open();
-			MySqlCommand command = new(query, connection);
-			MySqlDataReader reader = command.ExecuteReader();
+			SqlCommand command = new(query, connection);
+			SqlDataReader reader = command.ExecuteReader();
 
 			List<ProductModel> productList = new();
 			if (reader.HasRows)
@@ -243,16 +243,16 @@ namespace Food.Controllers
 				{
 					ProductModel product = new()
 					{
-						ProductId = reader.GetInt32("ProductId"),
-						ProductName = reader.GetString("ProductName"),
-						Description = reader.GetString("Description"),
-						MRPrice = reader.GetDecimal("MRPrice"),
-						SalePrice = reader.GetDecimal("SalePrice"),
-						DiscountPercent = reader.GetDecimal("DiscountPercent"),
+						ProductId = Convert.ToInt32(reader["ProductId"]),
+						ProductName = Convert.ToString(reader["ProductName"]) ?? "",
+						Description = Convert.ToString(reader["Description"]) ?? "",
+						MRPrice = Convert.ToDecimal(reader["MRPrice"]),
+						SalePrice = Convert.ToDecimal(reader["SalePrice"]),
+						DiscountPercent = Convert.ToDecimal(reader["DiscountPercent"]),
                         AvailableQuantity = reader["AvailableQuantity"] != DBNull.Value ? Convert.ToInt32(reader["AvailableQuantity"]) : null,
                         AvailableQuantityUnit = reader["AvailableQuantityUnit"] != DBNull.Value ? Convert.ToString(reader["AvailableQuantityUnit"]) : null,
-                        CreatedBy = reader.GetInt32("CreatedBy"),
-						CreatedOn = reader.GetDateTime("CreatedOn"),
+                        CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
+						CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
 						Images = reader["Images"] == null ? Array.Empty<byte>() : (byte[])reader["Images"]
 					};
 					if (product.Images != null)
@@ -284,13 +284,13 @@ namespace Food.Controllers
             }
             string query = "select * from tbl_Products where isdeleted = 0 and ProductId IN (" + string.Join(",", currentProductList.Select(a=> a.ProductId)) + ")";
 
-            MySqlConnection connection = new()
+            SqlConnection connection = new()
             {
                 ConnectionString = _config.GetConnectionString("DefaultConnection")
             };
             connection.Open();
-            MySqlCommand command = new(query, connection);
-            MySqlDataReader reader = command.ExecuteReader();
+            SqlCommand command = new(query, connection);
+            SqlDataReader reader = command.ExecuteReader();
 
             List<ProductOrdersModel> productList = new List<ProductOrdersModel>();
             decimal Total = 0M, Discount = 0M;
@@ -300,16 +300,16 @@ namespace Food.Controllers
                 {
                     ProductModel product = new()
                     {
-                        ProductId = reader.GetInt32("ProductId"),
-                        ProductName = reader.GetString("ProductName"),
-                        Description = reader.GetString("Description"),
-                        MRPrice = reader.GetDecimal("MRPrice"),
-                        SalePrice = reader.GetDecimal("SalePrice"),
-                        DiscountPercent = reader.GetDecimal("DiscountPercent"),
+                        ProductId = Convert.ToInt32(reader["ProductId"]),
+                        ProductName = Convert.ToString(reader["ProductName"]) ?? "",
+                        Description = Convert.ToString(reader["Description"]) ?? "",
+                        MRPrice = Convert.ToDecimal(reader["MRPrice"]),
+                        SalePrice = Convert.ToDecimal(reader["SalePrice"]),
+                        DiscountPercent = Convert.ToDecimal(reader["DiscountPercent"]),
                         AvailableQuantity = reader["AvailableQuantity"] != DBNull.Value ? Convert.ToInt32(reader["AvailableQuantity"]) : null,
                         AvailableQuantityUnit = reader["AvailableQuantityUnit"] != DBNull.Value ? Convert.ToString(reader["AvailableQuantityUnit"]) : null,
-                        CreatedBy = reader.GetInt32("CreatedBy"),
-                        CreatedOn = reader.GetDateTime("CreatedOn"),
+                        CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
+                        CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
                     };
                     var currentProduct = currentProductList.Find(a => a.ProductId == product.ProductId) ?? new ProductOrdersModel();
                     productList.Add(new ProductOrdersModel
@@ -339,6 +339,23 @@ namespace Food.Controllers
         public IActionResult Cart()
         {
             return View();
+        }
+
+        [HttpPost]
+        public IActionResult PlaceOrder(OrdersModel orders)
+        {
+            ResponseModel response = new();
+            if (orders == null)
+            {
+                response.Status = "error";
+                response.Message = "Data not found";
+                return Ok(response);
+            }
+
+            response.Status = "success";
+            response.Message = "Order placed.";
+            response.Data = orders;
+            return Ok(response);
         }
     }
 }

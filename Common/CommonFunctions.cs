@@ -1,4 +1,4 @@
-﻿using MySql.Data.MySqlClient;
+﻿using Microsoft.Data.SqlClient;
 using System.Text;
 
 namespace Food.Common
@@ -11,10 +11,10 @@ namespace Food.Common
             T item = new();
             try
             {
-                MySqlConnection connection = new(connectionString);
+                SqlConnection connection = new(connectionString);
                 connection.Open();
-                MySqlCommand command = new(query, connection);
-                MySqlDataReader reader = command.ExecuteReader();
+                SqlCommand command = new(query, connection);
+                SqlDataReader reader = command.ExecuteReader();
                 if (reader.HasRows)
                 {
 
@@ -62,10 +62,10 @@ namespace Food.Common
             List<T> list = new();
             try
             {
-                MySqlConnection connection = new(connectionString);
+                SqlConnection connection = new(connectionString);
                 connection.Open();
-                MySqlCommand command = new(query, connection);
-                MySqlDataReader reader = command.ExecuteReader();
+                SqlCommand command = new(query, connection);
+                SqlDataReader reader = command.ExecuteReader();
                 while (reader.Read())
                 {
                     T listItem = new();

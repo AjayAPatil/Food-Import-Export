@@ -1,7 +1,6 @@
 ﻿using Food.Models;
 using Microsoft.AspNetCore.Mvc;
-using MySql.Data.MySqlClient;
-using System.Collections.Generic;
+using Microsoft.Data.SqlClient;
 
 namespace Food.Controllers
 {
@@ -24,13 +23,13 @@ namespace Food.Controllers
         {
             string query = "select * from tbl_Products where isdeleted = 0";
 
-            MySqlConnection connection = new()
+            SqlConnection connection = new()
             {
                 ConnectionString = _config.GetConnectionString("DefaultConnection")
             };
             connection.Open();
-            MySqlCommand command = new(query, connection);
-            MySqlDataReader reader = command.ExecuteReader();
+            SqlCommand command = new(query, connection);
+            SqlDataReader reader = command.ExecuteReader();
 
             List<ProductModel> productList = new();
             if (reader.HasRows)
@@ -39,19 +38,19 @@ namespace Food.Controllers
                 {
                     ProductModel product = new()
                     {
-                        ProductId = reader.GetInt32("ProductId"),
-                        ProductName = reader.GetString("ProductName"),
-                        Description = reader.GetString("Description"),
-                        MRPrice = reader.GetDecimal("MRPrice"),
-                        SalePrice = reader.GetDecimal("SalePrice"),
-                        DiscountPercent = reader.GetDecimal("DiscountPercent"),
+                        ProductId = Convert.ToInt32(reader["ProductId"]),
+                        ProductName = Convert.ToString(reader["ProductName"]) ?? "",
+                        Description = Convert.ToString(reader["Description"]) ?? "",
+                        MRPrice = Convert.ToDecimal(reader["MRPrice"]),
+                        SalePrice = Convert.ToDecimal(reader["SalePrice"]),
+                        DiscountPercent = Convert.ToDecimal(reader["DiscountPercent"]),
                         CategoryId = Convert.ToInt32(reader["CategoryId"]),
                         AvailableQuantity = reader["AvailableQuantity"] != DBNull.Value ? Convert.ToInt32(reader["AvailableQuantity"]) : null,
                         AvailableQuantityUnit = reader["AvailableQuantityUnit"] != DBNull.Value ? Convert.ToString(reader["AvailableQuantityUnit"]) : null,
-                        CreatedBy = reader.GetInt32("CreatedBy"),
-                        CreatedOn = reader.GetDateTime("CreatedOn"),
+                        CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
+                        CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
                         Images = reader["Images"] == null || reader["Images"] == DBNull.Value ? Array.Empty<byte>() : (byte[])reader["Images"],
-                        IsActive = reader.GetInt32("ProductId") == id
+                        IsActive = Convert.ToInt32(reader["ProductId"]) == id
                     };
                     if (product.Images != null && product.Images?.Length > 0)
                     {
@@ -135,12 +134,12 @@ namespace Food.Controllers
                     response.Message = "Added Successfully";
                     response.Data = product;
                 }
-                MySqlConnection connection = new()
+                SqlConnection connection = new()
                 {
                     ConnectionString = _config.GetConnectionString("DefaultConnection")
                 };
                 connection.Open();
-                MySqlCommand command = new(query, connection);
+                SqlCommand command = new(query, connection);
                 _ = command.Parameters.AddWithValue("@ProductName", product.ProductName);
                 _ = command.Parameters.AddWithValue("@Description", product.Description);
                 _ = command.Parameters.AddWithValue("@Images", product.Images);
@@ -229,12 +228,12 @@ namespace Food.Controllers
                     response.Message = "Added Successfully";
                     response.Data = category;
                 }
-                MySqlConnection connection = new()
+                SqlConnection connection = new()
                 {
                     ConnectionString = _config.GetConnectionString("DefaultConnection")
                 };
                 connection.Open();
-                MySqlCommand command = new(query, connection);
+                SqlCommand command = new(query, connection);
                 _ = command.Parameters.AddWithValue("@CategoryName", category.CategoryName);
                 _ = command.Parameters.AddWithValue("@Description", category.Description);
                 _ = command.Parameters.AddWithValue("@CreatedBy", category.CreatedBy);
@@ -254,13 +253,13 @@ namespace Food.Controllers
         {
             string query = "select * from tbl_ProductCategories where isdeleted = 0";
 
-            MySqlConnection connection = new()
+            SqlConnection connection = new()
             {
                 ConnectionString = _config.GetConnectionString("DefaultConnection")
             };
             connection.Open();
-            MySqlCommand command = new(query, connection);
-            MySqlDataReader reader = command.ExecuteReader();
+            SqlCommand command = new(query, connection);
+            SqlDataReader reader = command.ExecuteReader();
 
             List<CategoryModel> categoryList = new();
             if (reader.HasRows)
@@ -269,12 +268,12 @@ namespace Food.Controllers
                 {
                     CategoryModel category = new()
                     {
-                        CategoryId = reader.GetInt32("CategoryId"),
-                        CategoryName = reader.GetString("CategoryName"),
-                        Description = reader.GetString("Description"),
-                        CreatedBy = reader.GetInt32("CreatedBy"),
-                        CreatedOn = reader.GetDateTime("CreatedOn"),
-                        IsActive = reader.GetInt32("CategoryId") == id
+                        CategoryId = Convert.ToInt32(reader["CategoryId"]),
+                        CategoryName = Convert.ToString(reader["CategoryName"]) ?? "",
+                        Description = Convert.ToString(reader["Description"]) ?? "",
+                        CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
+                        CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
+                        IsActive = Convert.ToInt32(reader["CategoryId"]) == id
                     };
                     categoryList.Add(category);
                 }

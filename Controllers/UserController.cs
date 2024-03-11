@@ -1,6 +1,6 @@
 ﻿using Food.Models;
 using Microsoft.AspNetCore.Mvc;
-using MySql.Data.MySqlClient;
+using Microsoft.Data.SqlClient;
 using Newtonsoft.Json;
 
 namespace Food.Controllers
@@ -32,13 +32,13 @@ namespace Food.Controllers
 
             string query = "select * from tbl_UserDetails where username = '" + data.UserName + "' and isdeleted = 0";
 
-            MySqlConnection connection = new()
+            SqlConnection connection = new()
             {
                 ConnectionString = _config.GetConnectionString("DefaultConnection")
             };
             connection.Open();
-            MySqlCommand command = new(query, connection);
-            MySqlDataReader reader = command.ExecuteReader();
+            SqlCommand command = new(query, connection);
+            SqlDataReader reader = command.ExecuteReader();
 
             UserModel? user = null;
             if (reader.HasRows)
@@ -47,13 +47,13 @@ namespace Food.Controllers
                 {
                     user = new UserModel
                     {
-                        UserId = reader.GetInt32("UserId"),
-                        UserName = reader.GetString("UserName"),
-                        Password = reader.GetString("Password"),
-                        Role = reader.GetString("Role"),
-                        IsActive = reader.GetBoolean("IsActive"),
-                        IsDeleted = reader.GetBoolean("IsDeleted"),
-                        CreatedOn = reader.GetDateTime("CreatedOn"),
+                        UserId = Convert.ToInt32(reader["UserId"]),
+                        UserName = Convert.ToString(reader["UserName"]) ?? "",
+                        Password = Convert.ToString(reader["Password"]) ?? "",
+                        Role = Convert.ToString(reader["Role"]) ?? "",
+                        IsActive = Convert.ToBoolean(reader["IsActive"]),
+                        IsDeleted = Convert.ToBoolean(reader["IsDeleted"]),
+                        CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
                         FirstName = reader["FirstName"]?.ToString(),
                         LastName = reader["LastName"]?.ToString(),
                         Gender = reader["Gender"]?.ToString(),
@@ -123,13 +123,13 @@ namespace Food.Controllers
 
             string query = "select * from tbl_UserDetails where username = '" + data.UserName + "'";
 
-            MySqlConnection connection = new()
+            SqlConnection connection = new()
             {
                 ConnectionString = _config.GetConnectionString("DefaultConnection")
             };
             connection.Open();
-            MySqlCommand command = new(query, connection);
-            MySqlDataReader reader = command.ExecuteReader();
+            SqlCommand command = new(query, connection);
+            SqlDataReader reader = command.ExecuteReader();
 
             if (reader.HasRows)
             {

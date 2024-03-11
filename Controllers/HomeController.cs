@@ -1,6 +1,6 @@
 ﻿using Food.Models;
 using Microsoft.AspNetCore.Mvc;
-using MySql.Data.MySqlClient;
+using Microsoft.Data.SqlClient;
 using System.Diagnostics;
 
 namespace Food.Controllers
@@ -20,13 +20,13 @@ namespace Food.Controllers
         {
             string query = "select * from tbl_Products where isdeleted = 0";
 
-            MySqlConnection connection = new()
+            SqlConnection connection = new()
             {
                 ConnectionString = _config.GetConnectionString("DefaultConnection")
             };
             connection.Open();
-            MySqlCommand command = new(query, connection);
-            MySqlDataReader reader = command.ExecuteReader();
+            SqlCommand command = new(query, connection);
+            SqlDataReader reader = command.ExecuteReader();
 
             List<ProductModel> productList = new();
             if (reader.HasRows)
@@ -35,14 +35,14 @@ namespace Food.Controllers
                 {
                     ProductModel product = new()
                     {
-                        ProductId = reader.GetInt32("ProductId"),
-                        ProductName = reader.GetString("ProductName"),
-                        Description = reader.GetString("Description"),
-                        MRPrice = reader.GetDecimal("MRPrice"),
-                        SalePrice = reader.GetDecimal("SalePrice"),
-                        DiscountPercent = reader.GetDecimal("DiscountPercent"),
-                        CreatedBy = reader.GetInt32("CreatedBy"),
-                        CreatedOn = reader.GetDateTime("CreatedOn"),
+                        ProductId = Convert.ToInt32(reader["ProductId"]),
+                        ProductName = Convert.ToString(reader["ProductName"]) ?? "",
+                        Description = Convert.ToString(reader["Description"]) ?? "",
+                        MRPrice = Convert.ToDecimal(reader["MRPrice"]),
+                        SalePrice = Convert.ToDecimal(reader["SalePrice"]),
+                        DiscountPercent = Convert.ToDecimal(reader["DiscountPercent"]),
+                        CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
+                        CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
                         Images = reader["Images"] == null || reader["Images"] == DBNull.Value ? Array.Empty<byte>() : (byte[])reader["Images"]
                     };
                     if (product.Images != null)
