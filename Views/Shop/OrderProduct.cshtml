@@ -295,7 +295,7 @@
                             <div class="form-group">
                                 <div class="col-md-12">
                                     <div class="checkbox">
-                                        <label><input type="checkbox" name="term-cond" id="term-cond" value="" class="mr-2"> I have read and accept the terms and conditions</label>
+                                        <label><input type="checkbox" name="term-cond" id="term-cond" value="allowed" class="mr-2"> I have read and accept the terms and conditions</label>
                                     </div>
                                 </div>
                             </div>
@@ -476,8 +476,11 @@
                 showErrorMsg('Please select payment method');
                 return;
             }
-        let d = $('input[name="term-cond"]:checked');
-        //if ($("term-cond").val())
+        if ($('input[name="term-cond"]:checked').serialize() == '') {
+            showErrorMsg('Please accept term and condition');
+            return;
+        }
+
         var user = localStorage.getItem("UserInfo");
         if (user) {
             let userdata = JSON.parse(user);
@@ -513,6 +516,7 @@
                 .done(function (res) {
                     if (res?.status == "success") {
                         showSuccessMsg(res.message);
+                        setTimeout(showInfoMsg('Development is in progress.........'), 1000)
                         console.log(res.data)
                         // setTimeout(function () {
                         //     window.location = "/Shop"
