@@ -287,8 +287,20 @@
             msgelement.hidden = validation.isEmailAddress(ev.value)
             msgelement.innerHTML = 'Enter Correct email. Ex- myemail@domain.co';
         } else if (ev.id == 'pincode') {
-            msgelement.hidden = !(validation.isNumber(ev.value) && ev.value?.length != 6);
+            msgelement.hidden = !(validation.isNumber(ev.value) && ev.value?.length != 6) && validation.isNotEmpty(ev.value);
             msgelement.innerHTML = 'Only numbers allowed with 6 digit length';
+        } else if (ev.id == 'firstname') {
+            msgelement.hidden = validation.isNotEmpty(ev.value);
+            msgelement.innerHTML = 'Firstname is mandatory';
+        } else if (ev.id == 'lastname') {
+            msgelement.hidden = validation.isNotEmpty(ev.value);
+            msgelement.innerHTML = 'Lastname is mandatory';
+        } else if (ev.id == 'address') {
+            msgelement.hidden = validation.isNotEmpty(ev.value);
+            msgelement.innerHTML = 'Address is mandatory';
+        } else if (ev.id == 'city') {
+            msgelement.hidden = validation.isNotEmpty(ev.value);
+            msgelement.innerHTML = 'City is mandatory';
         }
         return msgelement.hidden;
     }

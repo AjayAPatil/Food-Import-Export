@@ -35,7 +35,7 @@
                     </div>
                     <!--New user register form-->
                     <!--If not registerd register new user-->
-                    <div class="row align-items-end" id="register-user-form">
+                    <div class="row align-items-end" id="register-user-form" hidden>
                         <div class="col-md-12" id="register-user-form-login">
                             <a href="javascript:;" onclick="document.getElementById('login-form').hidden = false; document.getElementById('register-user-form').hidden = true;"
                             >Already Registred ? Click here to login..</a>
@@ -132,7 +132,7 @@
                         </div>
                     </div>
                     <!--Logged in user registerd address details-->
-                    <div class="row align-items-end" id="address-label-form">
+                    <div class="row align-items-end" id="address-label-form" hidden>
                         <div class="col-md-12">
                             <div class="form-group">
                                 <table style="width:100%; color: black;">
@@ -161,7 +161,7 @@
                         </div>
                         <div class="col-md-12" id="register-user-form-login">
                             <label style="cursor: pointer; color: #82ae46;" onchange="document.getElementById('address-form').hidden = document.getElementById('address-form').hidden !== true;">
-                                <input type="checkbox" name="optradio"> Ship to different address
+                                <input type="checkbox" name="optradio" id="open-ship-to-diff"> Ship to different address
                             </label>
                         </div>
                     </div>
@@ -171,59 +171,37 @@
                             <div class="form-group">
                                 <span style="color:black;">Mobile No.</span>
                                 <input type="number" title="Mobile No." name="a-mobileno" id="a-mobileno" onkeyup="Validate(this)" class="form-control" placeholder="Enter Mobile No." />
-                                <span style="color:red;" id="msg-mobileno" hidden></span>
+                                <span style="color:red;" id="msg-a-mobileno" hidden></span>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <span style="color:black;">Alternate Mobile No.</span>
-                                <input type="number" title="Mobile No." name="a-mobileno" id="a-mobileno" onkeyup="Validate(this)" class="form-control" placeholder="Enter Mobile No." />
-                                <span style="color:red;" id="msg-mobileno" hidden></span>
-                            </div>
-                        </div>
-                        <div class="w-100"></div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <span style="color:black;">Email Id</span>
                                 <input type="email" title="Email Id" name="a-emailid" id="a-emailid" onkeyup="Validate(this)" class="form-control" placeholder="Enter Email Id" />
-                                <span style="color:red;" id="msg-emailid" hidden></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <span style="color:black;">Address</span>
-                                <input type="email" title="Address" name="a-address" id="a-address" class="form-control" placeholder="Enter Address" />
-                                <span style="color:red;" id="msg-address" hidden></span>
+                                <span style="color:red;" id="msg-a-emailid" hidden></span>
                             </div>
                         </div>
                         <div class="w-100"></div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <span style="color:black;">Address</span>
+                                <input type="text" title="Address" name="a-address" id="a-address" class="form-control" placeholder="Enter Address" />
+                                <span style="color:red;" id="msg-a-address" hidden></span>
+                            </div>
+                        </div>
                         <div class="col-md-6">
                             <div class="form-group">
                                 <span style="color:black;">City</span>
                                 <input type="text" title="City" name="a-city" id="a-city" class="form-control" placeholder="Enter City Name" />
-                                <span style="color:red;" id="msg-city" hidden></span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <span style="color:black;">Pin Code</span>
-                                <input type="number" title="Pin Code" name="a-pincode" id="a-pincode" onkeyup="Validate(this)" class="form-control" placeholder="Enter Pin Code" />
-                                <span style="color:red;" id="msg-pincode" hidden></span>
+                                <span style="color:red;" id="msg-a-city" hidden></span>
                             </div>
                         </div>
                         <div class="w-100"></div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <div class="radio">
-                                    <label class="mr-3"><input type="radio" name="optradio"> Create an Account? </label>
-                                    <label><input type="radio" name="optradio"> Ship to different address</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <input type="submit" onclick="registeruser()" value="Register" class="btn btn-success py-3 px-5">
-                                <input type="reset" onclick="resetregisteruser()" value="Reset" class="btn btn-secondary py-3 px-5">
+                                <span style="color:black;">Pin Code</span>
+                                <input type="number" title="Pin Code" name="a-pincode" id="a-pincode" onkeyup="Validate(this)" class="form-control" placeholder="Enter Pin Code" />
+                                <span style="color:red;" id="msg-a-pincode" hidden></span>
                             </div>
                         </div>
                     </div>
@@ -339,8 +317,11 @@
 
             document.getElementById('login-form').hidden = true;
             document.getElementById('register-user-form').hidden = true;
+            document.getElementById('address-label-form').hidden = false;
+
         } else {
             document.getElementById('login-form-register').hidden = false;
+            document.getElementById('register-user-form').hidden = false;
             document.getElementById('register-user-form-login').hidden = false;
             document.getElementById('address-label-form').hidden = true;
         }
@@ -441,14 +422,20 @@
         } else if (ev.id == 'gender') {
             msgelement.hidden = $("input[type='radio'][name='gender']:checked").val() != undefined && $("input[type='radio'][name='gender']:checked").val() != '' && $("input[type='radio'][name='gender']:checked").val() != null
             msgelement.innerHTML = 'Select Gender';
-        } else if (ev.id == 'mobileno') {
+        } else if (ev.id == 'mobileno' || ev.id == 'a-mobileno') {
             msgelement.hidden = validation.isNumber(ev.value) && ev.value?.length != 10
             msgelement.innerHTML = 'Enter Correct mobile number.';
-        } else if (ev.id == 'emailid') {
+        } else if (ev.id == 'emailid' || ev.id == 'a-emailid') {
             msgelement.hidden = validation.isEmailAddress(ev.value)
             msgelement.innerHTML = 'Enter Correct email. Ex- myemail@domain.co';
-        } else if (ev.id == 'pincode') {
-            msgelement.hidden = !(validation.isNumber(ev.value) && ev.value?.length != 6);
+        } else if (ev.id == 'a-address') {
+            msgelement.hidden = validation.isNotEmpty(ev.value);
+            msgelement.innerHTML = 'Address is mandatory';
+        } else if (ev.id == 'a-city') {
+            msgelement.hidden = validation.isNotEmpty(ev.value);
+            msgelement.innerHTML = 'Address is mandatory';
+        } else if (ev.id == 'pincode' || ev.id == 'a-pincode') {
+            msgelement.hidden = !(validation.isNumber(ev.value) && ev.value?.length != 6) && validation.isNotEmpty(ev.value);
             msgelement.innerHTML = 'Only numbers allowed with 6 digit length';
         }
         return msgelement.hidden;
@@ -500,6 +487,23 @@
                 data.Address = userdata.address;
                 data.City = userdata.city;
                 data.PinCode = userdata.pinCode;
+            } else {
+                data.MobileNo = $('#a-mobileno').val();
+                data.EmailId = $('#a-emailid').val();
+                data.Address = $('#a-address').val();
+                data.City = $('#a-city').val();
+                data.PinCode = $('#a-pincode').val();
+
+                let isValid = true;
+                if (Validate({ id: 'a-mobileno', value: data.MobileNo }) == false && isValid == true) isValid = false;
+                if (Validate({ id: 'a-emailid', value: data.EmailId }) == false && isValid == true) isValid = false;
+                if (Validate({ id: 'a-address', value: data.Address }) == false && isValid == true) isValid = false;
+                if (Validate({ id: 'a-city', value: data.City }) == false && isValid == true) isValid = false;
+                if (Validate({ id: 'a-pincode', value: data.PinCode }) == false && isValid == true) isValid = false;
+                if (isValid == false) {
+                    showErrorMsg('Please fill the required fields');
+                    return;
+                }
             }
 
             data.CreatedBy = userdata.userId;
@@ -526,29 +530,33 @@
                 });
             })
 
-            $.post("/Shop/PlaceOrder", { orders: data })
-                .done(function (res) {
-                    if (res?.status == "success") {
-                        showSuccessMsg(res.message);
-                        setTimeout(function () { showInfoMsg('Development is in progress.........'); }, 1000)
-                        console.log(res.data)
-                        setTimeout(function () {
-                            window.location = "/Shop/UserOrders"
-                        }, 1000);
-                    } else if (res?.status) {
-                        showErrorMsg(res.message);
-                    } else {
-                        showErrorMsg("error");
-                    }
-                })
-                .fail(function () {
-                    showErrorMsg("error");
-                });
+            console.log(data);
+            setTimeout(function () { showInfoMsg('Development is in progress.........'); }, 1000)
+            placeOrderAPI(data);
 
         } else {
             showInfoMsg('Please login first');
             document.getElementById('login-form-register').hidden = false;
             document.getElementById('register-user-form-login').hidden = false;
         }
+    }
+    
+    function placeOrderAPI(data) {
+        $.post("/Shop/PlaceOrder", { orders: data })
+            .done(function (res) {
+                if (res?.status == "success") {
+                    showSuccessMsg(res.message);
+                    setTimeout(function () {
+                        window.location = "/Shop/UserOrders"
+                    }, 1000);
+                } else if (res?.status) {
+                    showErrorMsg(res.message);
+                } else {
+                    showErrorMsg("error");
+                }
+            })
+            .fail(function () {
+                showErrorMsg("error");
+            });
     }
 </script>

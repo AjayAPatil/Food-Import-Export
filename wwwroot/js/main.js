@@ -516,6 +516,9 @@ var validation = {
     isPassword: function (str) {
         var pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?.])[A-Za-z\d#$@!%&*?.]{8,30}$/;
         return pattern.test(str)
+    },
+    isNullEmptyUndefined: function (str) {
+        return str == null || str == undefined || str == '';
     }
 };
 
@@ -531,4 +534,16 @@ function formatDate(date) {
         day = '0' + day;
 
     return [day, month, year].join('-');
+}
+
+function setFoodModalContent(htmlContent, showSaveButton = false, design = '') {
+    document.getElementById('modal-save-btn').hidden = showSaveButton;
+    if (design == '') {
+        document.getElementById('modal-content').innerHTML = htmlContent;
+    } else {
+        document.getElementById('modal-body').innerHTML = htmlContent;
+    }
+}
+function openFoodModal() {
+    document.getElementById('launch-modal-btn').click();
 }
