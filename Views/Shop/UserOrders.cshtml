@@ -1,0 +1,152 @@
+﻿@{
+	ViewData["Title"] = "Favourites Page";
+}
+
+<section class="ftco-section ftco-cart">
+	<div class="container">
+		<div class="row">
+			<div class="col-md-12 ftco-animate">
+				<div class="cart-list">
+					<table class="table" id="tbl-order">
+						<thead class="thead-primary">
+							<tr class="text-center">
+								<th>Order No</th>
+								<th>Order Details</th>
+								<th>Ordered Date</th>
+								<th>Delevery Status</th>
+							</tr>
+						</thead>
+						<tbody id="tbl-order-body">
+							<tr class="text-center" id="tbl-order-row" hidden>
+
+								<td>1</td>
+
+								<td>
+									<table>
+                                        <tr>
+                                            <td class="image-prod"><div class="img" style="background-image:url(/images/product-1.jpg);"></div></td>
+										</tr>
+										<tr>
+											<td class="product-name">
+												<h3>Bell Pepper</h3>
+												<p>Far far away, behind the word mountains, far from the countries</p>
+											</td>
+										</tr>
+									</table>
+								</td>
+								
+								<td>15 Mar 24</td>
+								<td>20 Mar 24</td>
+
+							</tr><!-- END TR-->
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</section>
+
+<script>
+
+	setTimeout(onPageLoad, 500);
+	function onPageLoad() {
+		var user = localStorage.getItem("UserInfo");
+		if (user) {
+			let userdata = JSON.parse(user);
+			getUserOrders(userdata.userId)
+
+		} else {
+		}
+	}
+
+	function getUserOrders(userId) {
+		$.get("/Shop/GetUserOrders?userid=" + userId)
+			.done(function (res) {
+				console.log(res);
+				if (res?.status == "success") {
+					var prodTblRow = document.getElementById("tbl-order-body");
+					var htmlData = "";
+					res.data.forEach((row, id) => {
+						htmlData += `
+									<tr class="text-center tbl-order-tr" id="tbl-order-row-` + id + `" onclick="showOrderDetails(` + id + `, ` + res.data.length + `)">
+										<td style="border-bottom: solid 1px black !important;">` + (id + 1) + `</td>
+										<td style="padding: 5px;border-bottom: solid 1px black !important">
+											<table style="width: 100%;">`
+											row.productOrders.forEach(subrow => {
+						htmlData += `
+												<tr>
+													<td class="image-prod" style="padding: 0;"><div class="img" style="background-image:url('` + subrow.product.imagesB64 + `');"></div></td>
+													<td class="product-name">
+														<h3 class="food-tooltip">` + subrow.product.productName + `
+															<a class="food-tooltiptext" href="/Shop/Product?productId=` + subrow.product.productId + `">Click view Product</a>
+														</h3>
+													</td>
+												</tr>`
+											});
+						htmlData += `
+											</table>
+										</td>
+
+
+
+									<td style="border-bottom: solid 1px black !important";><span id="usr-` + id + `">` + formatDate(row.orderDate) + `</span></td>
+
+									<td style="border-bottom: solid 1px black !important;"><span id="dt-` + id + `">` + (row.deliveryStatus == 'Delivered' ? 'Delivered' : 'Delivery') + ` On ` + formatDate(row.deliveryDate) + `</span></td>
+								</tr><!-- END TR-->
+
+								<tr id="hiddenRow` + id + `" hidden>
+									<td colspan="4" style="width: 100%; background: rgb(129 173 70 / 30%); color: black;">
+										<table style="width: 100%; border: black 1px solid !important;">
+											<tr style=" border: black 1px solid; font-weight:bold;">
+												<td style="border: black 1px solid !important; padding: 0px;">Product Name</td>
+												<td style="border: black 1px solid !important; padding: 0px;">MRP</td>
+												<td style="border: black 1px solid !important; padding: 0px;">Sale Price</td>
+												<td style="border: black 1px solid !important; padding: 0px;">Discount Percent</td>
+												<td style="border: black 1px solid !important; padding: 0px;">Ordered Quantity</td>
+												<td style="max-width: 260px; border: black 1px solid !important; padding: 0px;">Address</td>
+												<td style="border: black 1px solid !important; padding: 0px;">Amount</td>
+											</tr>`
+										row.productOrders.forEach(subrow => {
+								htmlData += `
+											<tr style=" border: black 1px solid;">
+												<td style="border: black 1px solid !important; padding: 0px;">` + subrow.product.productName + `</td>
+												<td style="border: black 1px solid !important; padding: 0px;">₹` + subrow.product.mrPrice + `</td>
+												<td style="border: black 1px solid !important; padding: 0px;">₹` + subrow.product.salePrice + `</td>
+												<td style="border: black 1px solid !important; padding: 0px;">` + subrow.product.discountPercent + `%</td>
+												<td style="border: black 1px solid !important; padding: 0px;">` + subrow.quantity + ` ` + subrow.quantityUnit + `</td>
+												<td style="max-width: 260px; border: black 1px solid !important; padding: 0px;">` + row.mobileNo + `
+												<br />` + row.address + `
+												&nbsp;` + row.city + `
+												&nbsp;` + row.pinCode + `</td>
+												<td style="border: black 1px solid !important; padding: 0px;">₹` + subrow.amount + `</td>
+											</tr>`
+										});
+								htmlData += `
+											<tr style=" border: black 1px solid;">
+												<td colspan="5" style="border: black 1px solid !important; padding: 0px;">` + row.deliveryStatus + `</td>
+												<td style="border: black 1px solid !important; padding: 0px; font-weight: bold;">Total</td>
+												<td style="border: black 1px solid !important; padding: 0px;">₹` + row.amount + `</td>
+											</tr>
+										</table>
+									</td>
+								</tr>
+								`;
+					});
+					prodTblRow.innerHTML = htmlData;
+				}
+			})
+			.fail(function () {
+			});
+	}
+
+	function showOrderDetails(id, lenth) {
+		for (let r = 0; r < lenth; r++) {
+			document.getElementById('hiddenRow' + r).hidden = true;
+			document.getElementById('tbl-order-row-' + r).style.background = '';
+		}
+		document.getElementById('tbl-order-row-' + id).style.background = 'rgb(129 173 70 / 30%)';
+		document.getElementById('hiddenRow' + id).hidden = false;
+	}
+
+</script>

@@ -40,6 +40,7 @@
       "executablePath": "dotnet.exe",
       "commandLineArgs": "watch run",
       "workingDirectory": "$(ProjectDir)",
+      "browsers": "Microsoft Edge",
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"

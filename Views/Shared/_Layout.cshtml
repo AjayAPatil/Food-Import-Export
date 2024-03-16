@@ -76,22 +76,22 @@
                             <a class="dropdown-item" href="/Admin/Categories">Categories</a>
                         </div>
                     </li>
-                    <li class="nav-item dropdown" id="shop-btn1">
-                        <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Shop</a>
-                        <div class="dropdown-menu" aria-labelledby="dropdown04">
-                            <a class="dropdown-item" href="/Shop">Shop</a>
-                            <a class="dropdown-item" href="/Shop/Favourites">Favourites</a>
-                            <a class="dropdown-item" href="/Shop/Cart">Cart</a>
-                        </div>
-                    </li>
-                    <li class="nav-item" id="shop-btn2"><a href="/Shop" class="nav-link">Shop</a></li>
+                    <li class="nav-item" id="shop-btn"><a href="/Shop" class="nav-link">Shop</a></li>
                     <li class="nav-item"><a href="/Home/About" class="nav-link">About</a></li>
                     @* <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li> *@
                     <li class="nav-item"><a href="/Home/Contact" class="nav-link">Contact</a></li>
-                    @* <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span>[0]</a></li> *@
-                    <li class="nav-item">
-                        <a id="user-logout-btn" href="/User/LoginPage" class="nav-link" style="display: none;" onclick="logout()"><span class="icon-user"></span>Logout</a>
-                        <a id="user-login-btn" href="/User/LoginPage" class="nav-link"><span class="icon-user"></span>Login</a>
+
+                    <li class="nav-item dropdown" id="user-logout-btn" style="display: none;">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown03" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="icon-user"></span> <span id="logged-username">User</span></a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown03">
+                            <a class="dropdown-item" href="/Shop/Favourites"><i class="ion-ios-heart" style="color: red;"></i> Favourites</a>
+                            <a class="dropdown-item" href="/Shop/Cart"><i class="ion-ios-cart" style="color: #0062cc;"></i> Cart</a>
+                            <a class="dropdown-item" href="/Shop/UserOrders"><i class="ion-ios-order" style="color: #0062cc;"></i> Orders</a>
+                            <a class="dropdown-item" href="/User/LoginPage" onclick="logout()"><i class="ion-ios-log-out" style="color: #82ae46;"></i> Logout</a>
+                        </div>
+                    </li>
+                    <li class="nav-item" id="user-login-btn">
+                        <a href="/User/LoginPage" class="nav-link"><span class="ion-ios-log-in" style="color: #82ae46;"></span> Login</a>
                     </li>
 
                 </ul>

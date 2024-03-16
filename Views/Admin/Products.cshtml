@@ -143,10 +143,12 @@
         if (user) {
             var userdata = JSON.parse(user);
             if (userdata.role != "Admin") {
-                location.href = "User/LoginPage";
+                localStorage.clear();
+                location.href = "/User/LoginPage";
             }
         } else {
-            location.href = "User/LoginPage";
+            localStorage.clear();
+            location.href = "/User/LoginPage";
         }
         var img = document.getElementById('product-image');
         if (img?.src) {

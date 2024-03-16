@@ -259,6 +259,26 @@ BEGIN
     CREATE TABLE tbl_Orders(OrderId INT PRIMARY KEY IDENTITY (1, 1))
 END
 
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE  object_id = OBJECT_ID(N'[dbo].[tbl_Orders]') AND name = 'OrderDate')
+BEGIN
+	ALTER TABLE tbl_Orders ADD OrderDate DATETIME DEFAULT GETDATE()
+END
+
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE  object_id = OBJECT_ID(N'[dbo].[tbl_Orders]') AND name = 'PaymentMethod')
+BEGIN
+	ALTER TABLE tbl_Orders ADD PaymentMethod VARCHAR(255)
+END
+
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE  object_id = OBJECT_ID(N'[dbo].[tbl_Orders]') AND name = 'DeliveryDate')
+BEGIN
+	ALTER TABLE tbl_Orders ADD DeliveryDate DATETIME DEFAULT GETDATE()
+END
+
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE  object_id = OBJECT_ID(N'[dbo].[tbl_Orders]') AND name = 'DeliveryStatus')
+BEGIN
+	ALTER TABLE tbl_Orders ADD DeliveryStatus VARCHAR(255)
+END
+
 IF NOT EXISTS (SELECT * FROM sys.columns WHERE  object_id = OBJECT_ID(N'[dbo].[tbl_Orders]') AND name = 'MobileNo')
 BEGIN
 	ALTER TABLE tbl_Orders ADD MobileNo VARCHAR(12)

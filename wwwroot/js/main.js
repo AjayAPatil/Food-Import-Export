@@ -353,31 +353,31 @@ function onloadPage() {
     var admn = document.getElementById('admin-btn');
     var home = document.getElementById('home-btn');
     var admnhome = document.getElementById('admin-home-btn');
-    var shop1 = document.getElementById('shop-btn1');
-    var shop2 = document.getElementById('shop-btn2');
+    var shop = document.getElementById('shop-btn');
+    var usrName = document.getElementById('logged-username');
 
     lin.style.display = 'block';
     lout.style.display = 'none';
     admn.style.display = 'none';
     home.style.display = 'block';
     admnhome.style.display = 'none';
-    shop1.style.display = 'none';
-    shop2.style.display = 'block';
+    shop.style.display = 'block';
     var jsonuserdata = localStorage.getItem("UserInfo");
     if (jsonuserdata) {
         var user = JSON.parse(jsonuserdata);
 
         if (user) {
+            usrName.innerHTML = user.userName;
             lin.style.display = 'none'
             lout.style.display = 'block'
-            shop2.style.display = 'none';
 
             if (user.role == 'Admin') {
                 admn.style.display = 'block';
                 admnhome.style.display = 'block';
                 home.style.display = 'none';
+                shop.style.display = 'none';
             } else {
-                shop1.style.display = 'block';
+                shop.style.display = 'block';
             }
         }
     }
@@ -517,4 +517,18 @@ var validation = {
         var pattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?.])[A-Za-z\d#$@!%&*?.]{8,30}$/;
         return pattern.test(str)
     }
-};  
+};
+
+function formatDate(date) {
+    var d = new Date(date),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate(),
+        year = d.getFullYear();
+
+    if (month.length < 2)
+        month = '0' + month;
+    if (day.length < 2)
+        day = '0' + day;
+
+    return [day, month, year].join('-');
+}

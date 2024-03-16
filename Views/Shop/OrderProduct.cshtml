@@ -246,7 +246,7 @@
                                     <span>@Model.productList[i].Product.ProductName</span>
                                     <span>@Model.productList[i].Quantity @Model.productList[i].QuantityUnit</span>
                                     <span>₹@Model.productList[i].Product.MRPrice</span>
-                                    <span>₹@Model.productList[i].Amount</span>
+                                    <span>₹@Model.productList[i].MrpAmount</span>
                             </p>
                             }
                             <p class="d-flex">
@@ -270,6 +270,10 @@
                                 <span></span>
                                 <span>₹@Model.Total</span>
                             </p>
+                            <p class="d-flex">
+                                <span style="min-width: 75%;">Delivery Date</span>
+                                <span id="dt-delivery"></span>
+                            </p>
                         </div>
                     </div>
                     <!--Payment Method-->
@@ -279,16 +283,16 @@
                             <div class="form-group">
                                 <div class="col-md-12">
                                     <div class="radio">
-                                        <label><input type="radio" name="payment-method" class="mr-2"> Direct Bank Transfer</label>
+                                        <label><input type="radio" name="payment-method" class="mr-2" value="DBT"> Direct Bank Transfer</label>
                                     </div>
                                     <div class="radio">
-                                        <label><input type="radio" name="payment-method" class="mr-2"> Cheque Payment</label>
+                                        <label><input type="radio" name="payment-method" class="mr-2" value="CP"> Cheque Payment</label>
                                     </div>
                                     <div class="radio">
-                                        <label><input type="radio" name="payment-method" class="mr-2"> UPI</label>
+                                        <label><input type="radio" name="payment-method" class="mr-2" value="UPI"> UPI</label>
                                     </div>
                                     <div class="radio">
-                                        <label><input type="radio" name="payment-method" class="mr-2"> Cash On Delivery</label>
+                                        <label><input type="radio" name="payment-method" class="mr-2" value="COD"> Cash On Delivery</label>
                                     </div>
                                 </div>
                             </div>
@@ -317,8 +321,12 @@
         }
     }
 
+    let DeliveryDate = new Date();
+
     setTimeout(onPageLoad, 500);
     function onPageLoad() {
+        DeliveryDate.setDate(DeliveryDate.getDate() + Math.floor(Math.random() * 6) + 1);
+        document.getElementById('dt-delivery').innerText = formatDate(DeliveryDate);
         var user = localStorage.getItem("UserInfo");
         if (user) {
             let userdata = JSON.parse(user);
@@ -493,9 +501,14 @@
                 data.City = userdata.city;
                 data.PinCode = userdata.pinCode;
             }
+
             data.CreatedBy = userdata.userId;
-            data.CreatedOn = new Date();
+            data.CreatedOn = formatDate(new Date());
             data.IsDeleted = false;
+            data.OrderDate = formatDate(new Date());
+            data.PaymentMethod = $("input[type='radio'][name='payment-method']:checked").val();
+            data.DeliveryDate = formatDate(DeliveryDate);
+            data.DeliveryStatus = 'Order Placed';
             data.ProductOrders = []
 
             let prodLst = @Html.Raw(Json.Serialize(Model.productList));
@@ -506,6 +519,7 @@
                     Quantity: p.quantity,
                     QuantityUnit: p.quantityUnit,
                     Amount: p.amount,
+                    MrpAmount: p.mrpAmount,
                     CreatedBy: userdata.userId,
                     CreatedOn: new Date(),
                     IsDeleted: false
@@ -516,11 +530,11 @@
                 .done(function (res) {
                     if (res?.status == "success") {
                         showSuccessMsg(res.message);
-                        setTimeout(showInfoMsg('Development is in progress.........'), 1000)
+                        setTimeout(function () { showInfoMsg('Development is in progress.........'); }, 1000)
                         console.log(res.data)
-                        // setTimeout(function () {
-                        //     window.location = "/Shop"
-                        // }, 500);
+                        setTimeout(function () {
+                            window.location = "/Shop/UserOrders"
+                        }, 1000);
                     } else if (res?.status) {
                         showErrorMsg(res.message);
                     } else {
