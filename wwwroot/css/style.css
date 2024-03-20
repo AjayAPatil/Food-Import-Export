@@ -10150,20 +10150,33 @@ textarea.form-control {
 
     .food-tooltip .food-tooltiptext {
         visibility: hidden;
-        width: 120px;
+        /*min-width: 120px;*/
+        width: fit-content;
         background-color: #414141b5;
         color: #fff;
         text-align: center;
         border-radius: 6px;
-        padding: 5px 0;
+        padding: 5px;
         /* Position the tooltip */
         position: absolute;
         z-index: 1;
         top: 100%;
         left: 50%;
-        margin-left: -60px;
+        margin-left: -5px;
     }
 
     .food-tooltip:hover .food-tooltiptext {
         visibility: visible;
     }
+
+.tbl-admin-users {
+    min-width: 100%;
+}
+    .tbl-admin-users th, .tbl-admin-users td {
+        border: solid 1px black;
+        padding: 5px;
+        min-width: 150px;
+    }
+.tbl-admin-users-action {
+    min-width: 100px !important;
+}

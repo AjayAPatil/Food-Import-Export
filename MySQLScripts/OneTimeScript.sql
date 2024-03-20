@@ -364,3 +364,41 @@ IF NOT EXISTS (SELECT * FROM sys.columns WHERE  object_id = OBJECT_ID(N'[dbo].[t
 BEGIN
 	ALTER TABLE tbl_ProductOrders ADD IsDeleted  BIT DEFAULT 1
 END
+
+--TABLE tbl_MasterCoupon
+IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tbl_MasterCoupon' and xtype='U')
+BEGIN
+    CREATE TABLE tbl_MasterCoupon(CouponId INT PRIMARY KEY IDENTITY (1, 1))
+END
+
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE  object_id = OBJECT_ID(N'[dbo].[tbl_MasterCoupon]') AND name = 'CouponCode')
+BEGIN
+	ALTER TABLE tbl_MasterCoupon ADD CouponCode VARCHAR(255) UNIQUE NOT NULL
+END
+
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE  object_id = OBJECT_ID(N'[dbo].[tbl_MasterCoupon]') AND name = 'CouponDiscount')
+BEGIN
+	ALTER TABLE tbl_MasterCoupon ADD CouponDiscount decimal NOT NULL
+END
+
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE  object_id = OBJECT_ID(N'[dbo].[tbl_MasterCoupon]') AND name = 'CreatedBy')
+BEGIN
+	ALTER TABLE tbl_MasterCoupon ADD CreatedBy INT FOREIGN KEY REFERENCES tbl_UserDetails(UserId) NOT NULL
+END
+
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE  object_id = OBJECT_ID(N'[dbo].[tbl_MasterCoupon]') AND name = 'CreatedOn')
+BEGIN
+	ALTER TABLE tbl_MasterCoupon ADD CreatedOn DATETIME DEFAULT GETDATE()
+END
+
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE  object_id = OBJECT_ID(N'[dbo].[tbl_MasterCoupon]') AND name = 'IsDeleted')
+BEGIN
+	ALTER TABLE tbl_MasterCoupon ADD IsDeleted  BIT DEFAULT 1
+END
+
+IF NOT EXISTS (SELECT * FROM sys.columns WHERE  object_id = OBJECT_ID(N'[dbo].[tbl_Orders]') AND name = 'CouponId')
+BEGIN
+	ALTER TABLE tbl_Orders ADD CouponId INT FOREIGN KEY REFERENCES tbl_MasterCoupon(CouponId) NULL
+END
+
+GO

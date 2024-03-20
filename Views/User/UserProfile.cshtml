@@ -1,0 +1,278 @@
+﻿@{
+    ViewData["Title"] = "User Profile";
+}
+
+
+<section class="ftco-section ftco-no-pb ftco-no-pt bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-4 py-5 wrap-about pb-md-5 ftco-animate">
+                <div class="heading-section-bold mb-4 mt-md-5">
+                    <div class="ml-md-0">
+                        <h2 class="mb-4">Profile</h2>
+                    </div>
+                </div>
+                <div class="pb-md-5" id="user-links" hidden>
+                    <p><a href="javascript:;" class="btn btn-link" onclick="disableEnableCntrl(false)">Update Profile</a></p>
+                    <p><a href="/Shop" class="btn btn-link">Shop now</a></p>
+                    <p><a href="/Shop/UserOrders" class="btn btn-link">Orders</a></p>
+                    <p><a href="/Shop/Favourites" class="btn btn-link">Favourites</a></p>
+                    <p><a href="/Shop/Cart" class="btn btn-link">Cart</a></p>
+                    <p><a href="/User/LoginPage" class="btn btn-link" onclick="logout()">Logout</a></p>
+                </div>
+                <div class="pb-md-5" id="admin-links" hidden>
+                    <p><a href="/Admin/Products" class="btn btn-link"><i class="icon-shopping-bag"></i> Manage Products</a></p>
+                    <p><a href="/Admin/Categories" class="btn btn-link"><i class="icon-merge_type"></i> Manage Categories</a></p>
+                    <p><a href="/Admin/Coupon" class="btn btn-link"><i class="icon-code"></i> Manage Coupons</a></p>
+                    <p><a href="/User/UserProfile" class="btn btn-link"><i class="icon-user" style="color: #82ae46;"></i> Manage Profile</a></p>
+                    <p><a href="/User/LoginPage" class="btn btn-link" onclick="logout()"><i class="ion-ios-log-out" style="color: #82ae46;"></i> Logout</a></p>
+                </div>
+            </div>
+            <div class="col-md-8 p-md-5 img img-2 d-flex justify-content-center align-items-center">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <span style="color:black;">User Name</span>
+                            <input type="text" disabled title="User Name" name="r-username" id="r-username" onkeyup="Validate(this)" class="form-control" placeholder="Enter User Name" />
+                            <span style="color:red;" id="msg-r-username" hidden></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <span style="color:black;">Password</span>
+                            <input type="password" title="Password" name="r-password" id="r-password" onkeyup="Validate(this)" class="form-control" placeholder="Enter Password" />
+                            <span style="color:red;" id="msg-r-password" hidden></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <span style="color:black;">Confirm Password</span>
+                            <input type="password" title="Confirm Password" name="confirm-password" id="confirm-password" onkeyup="confirmPwd()" class="form-control" placeholder="Enter Password Again" />
+                            <span style="color:red;" id="msg-confirm-password" hidden></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <span style="color:black;">First Name</span>
+                            <input type="text" title="First Name" name="firstname" id="firstname" class="form-control" placeholder="Enter First Name" />
+                            <span style="color:red;" id="msg-firstname" hidden></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <span style="color:black;">Last Name</span>
+                            <input type="text" title="Last Name" name="lastname" id="lastname" class="form-control" placeholder="Enter Last Name" />
+                            <span style="color:red;" id="msg-lastname" hidden></span>
+                        </div>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <span style="color:black;">Gender</span> <br />
+                            <input type="radio" id="male" name="gender" value="male"> Male &nbsp;&nbsp;
+                            <input type="radio" id="female" name="gender" value="female"> Female &nbsp;&nbsp;
+                            <input type="radio" id="other" name="gender" value="other"> Other
+                            <br />
+                            <span style="color:red;" id="msg-gender" hidden></span>
+                        </div>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <span style="color:black;">Mobile No.</span>
+                            <input type="number" title="Mobile No." name="mobileno" id="mobileno" onkeyup="Validate(this)" class="form-control" placeholder="Enter Mobile No." />
+                            <span style="color:red;" id="msg-mobileno" hidden></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <span style="color:black;">Email Id</span>
+                            <input type="email" title="Email Id" name="emailid" id="emailid" onkeyup="Validate(this)" class="form-control" placeholder="Enter Email Id" />
+                            <span style="color:red;" id="msg-emailid" hidden></span>
+                        </div>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <span style="color:black;">Address</span>
+                            <input type="email" title="Address" name="address" id="address" class="form-control" placeholder="Enter Address" />
+                            <span style="color:red;" id="msg-address" hidden></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <span style="color:black;">City</span>
+                            <input type="text" title="City" name="city" id="city" class="form-control" placeholder="Enter City Name" />
+                            <span style="color:red;" id="msg-city" hidden></span>
+                        </div>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <span style="color:black;">Pin Code</span>
+                            <input type="number" title="Pin Code" name="pincode" id="pincode" onkeyup="Validate(this)" class="form-control" placeholder="Enter Pin Code" />
+                            <span style="color:red;" id="msg-pincode" hidden></span>
+                        </div>
+                    </div>
+                    <div class="w-100"></div>
+                    <div class="col-md-12" id="update-action">
+                        <div class="form-group">
+                            <input type="button" onclick="updateProfile()" value="Update" class="btn btn-success py-3 px-5">
+                            <input type="button" onclick="onPageLoad()" value="Reset" class="btn btn-secondary py-3 px-5">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    setTimeout(onPageLoad, 500);
+    function onPageLoad() {
+        var user = localStorage.getItem("UserInfo");
+        if (user) {
+            let userdata = JSON.parse(user);
+
+            if (userdata.role == "Admin") {
+                document.getElementById("admin-links").hidden = false;
+            } else {
+                document.getElementById("user-links").hidden = false;           
+            }
+
+            setUserData(userdata);
+
+        } else {
+            window.location.href = '/User/Login';
+        }
+    }
+
+    function setUserData(userData) {
+
+        $('#r-username').val(userData.userName);
+        $('#r-password').val(userData.password);
+        $('#confirm-password').val(userData.password);
+        $("#firstname").val(userData.firstName);
+        $("#lastname").val(userData.lastName);
+        $("input[type='radio'][name='gender'][id='" + userData.gender + "']").prop("checked", true)
+        $("#mobileno").val(userData.mobileNo);
+        $("#emailid").val(userData.emailId);
+        $("#address").val(userData.address);
+        $("#city").val(userData.city);
+        $("#pincode").val(userData.pinCode);
+
+        disableEnableCntrl();
+    }
+
+    function disableEnableCntrl(isDisable = true) {
+        // $('#r-username').attr('disabled', isDisable);
+        $('#r-password').attr('disabled', isDisable);
+        $('#confirm-password').attr('disabled', isDisable);
+        $('#firstname').attr('disabled', isDisable);
+        $('#lastname').attr('disabled', isDisable);
+        $("input[type='radio'][name='gender']").attr('disabled', isDisable);
+        $('#mobileno').attr('disabled', isDisable);
+        $('#emailid').attr('disabled', isDisable);
+        $('#address').attr('disabled', isDisable);
+        $('#city').attr('disabled', isDisable);
+        $('#pincode').attr('disabled', isDisable);
+        document.getElementById("update-action").hidden = isDisable;
+    }
+
+    function updateProfile() {
+        var data = {
+            UserName: $('#r-username').val(),
+            Password: $('#r-password').val(),
+            ConfirmPassword: $('#confirm-password').val(),
+            FirstName: $('#firstname').val(),
+            LastName: $('#lastname').val(),
+            Gender: $("input[type='radio'][name='gender']:checked").val() ?? '',
+            MobileNo: $('#mobileno').val(),
+            EmailId: $('#emailid').val(),
+            Address: $('#address').val(),
+            City: $('#city').val(),
+            PinCode: $('#pincode').val(),
+            Role: 'Customer',
+            IsActive: true,
+            IsDeleted: false,
+
+        };
+        let isValid = true;
+        if (Validate({ id: 'r-username', value: data.UserName }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'r-password', value: data.Password }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'confirm-password', value: data.ConfirmPassword }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'firstname', value: data.FirstName }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'lastname', value: data.LastName }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'gender', value: data.Gender }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'mobileno', value: data.MobileNo }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'emailid', value: data.EmailId }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'address', value: data.Address }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'city', value: data.City }) == false && isValid == true) isValid = false;
+        if (Validate({ id: 'pincode', value: data.PinCode }) == false && isValid == true) isValid = false;
+        if (isValid == false) {
+            showErrorMsg('Please fill the required fields');
+            return;
+        }
+
+        $.post("/User/UpdateUser", { data: data })
+            .done(function (res) {
+                if (res?.status == "success") {
+                    showSuccessMsg(res.message);
+                    localStorage.setItem("UserInfo", JSON.stringify(res.data));
+
+                    setTimeout(onPageLoad, 500);
+                } else if (res?.status) {
+                    showErrorMsg(res.message);
+                } else {
+                    showErrorMsg("error");
+                }
+            })
+            .fail(function () {
+                showErrorMsg("error");
+            });
+    }
+    function confirmPwd() {
+        var Password = $('#r-password').val();
+        var ConfirmPassword = $('#confirm-password').val();
+        var errmsg = document.getElementById('msg-confirm-password');
+        if (Password == ConfirmPassword) {
+            errmsg.hidden = true;
+        } else {
+            errmsg.hidden = false;
+            errmsg.innerHTML = 'Password not matched!';
+        }
+    }
+
+    function Validate(ev) {
+        let msgelement = document.getElementById('msg-' + ev.id);
+        if (ev.id == 'r-username') {
+            msgelement.hidden = validation.isNotEmpty(ev.value);
+            msgelement.innerHTML = 'Username is mandatory';
+        } else if (ev.id == 'r-password') {
+            msgelement.hidden = validation.isPassword(ev.value);
+            msgelement.innerHTML = 'Password must contain minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character';
+            confirmPwd();
+        } else if (ev.id == 'confirm-password') {
+            msgelement.hidden = ev.value != undefined && ev.value != '' && ev.value != null;
+            msgelement.innerHTML = 'Password not matched!';
+        } else if (ev.id == 'gender') {
+            msgelement.hidden = $("input[type='radio'][name='gender']:checked").val() != undefined && $("input[type='radio'][name='gender']:checked").val() != '' && $("input[type='radio'][name='gender']:checked").val() != null
+            msgelement.innerHTML = 'Select Gender';
+        } else if (ev.id == 'mobileno' || ev.id == 'a-mobileno') {
+            msgelement.hidden = validation.isNumber(ev.value) && ev.value?.length != 10
+            msgelement.innerHTML = 'Enter Correct mobile number.';
+        } else if (ev.id == 'emailid' || ev.id == 'a-emailid') {
+            msgelement.hidden = validation.isEmailAddress(ev.value)
+            msgelement.innerHTML = 'Enter Correct email. Ex- myemail@domain.co';
+        } else if (ev.id == 'a-address') {
+            msgelement.hidden = validation.isNotEmpty(ev.value);
+            msgelement.innerHTML = 'Address is mandatory';
+        } else if (ev.id == 'a-city') {
+            msgelement.hidden = validation.isNotEmpty(ev.value);
+            msgelement.innerHTML = 'Address is mandatory';
+        } else if (ev.id == 'pincode' || ev.id == 'a-pincode') {
+            msgelement.hidden = !(validation.isNumber(ev.value) && ev.value?.length != 6) && validation.isNotEmpty(ev.value);
+            msgelement.innerHTML = 'Only numbers allowed with 6 digit length';
+        }
+        return msgelement.hidden;
+    }
+
+</script>

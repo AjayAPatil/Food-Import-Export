@@ -2,15 +2,22 @@
     ViewData["Title"] = "Admin Dashboard";
 }
 
-<h1>Admin Dashboard</h1>
-
 <div class="container">
     <div class="row justify-content-center">
-        <div class="col-md-10 mb-5 text-center">
-            <ul class="product-category">
-                <li><a href="/Admin/Products">Manage Products</a></li>
-                <li><a href="/Admin/Categories">Manage Categories</a></li>
-            </ul>
+        <div class="col-md-8 py-5 wrap-about pb-md-5 ftco-animate">
+            <div class="heading-section-bold mb-4">
+                <div class="ml-md-0">
+                    <h2 class="mb-4">Admin Dashboard</h2>
+                </div>
+            </div>
+            <div class="pb-md-5">
+                <p><a class="btn btn-link" href="/Admin/Products"><i class="icon-shopping-bag"></i> Manage Products</a></p>
+                <p><a class="btn btn-link" href="/Admin/Categories"><i class="icon-merge_type"></i> Manage Categories</a></p>
+                <p><a class="btn btn-link" href="/Admin/Coupon"><i class="icon-code"></i> Manage Coupons</a></p>
+                <p><a class="btn btn-link" href="/Admin/Users"><i class="icon-users"></i> Manage Users</a></p>
+                <p><a class="btn btn-link" href="/User/UserProfile"><i class="icon-user" style="color: #82ae46;"></i> Manage Profile</a></p>
+                <p><a class="btn btn-link" href="/User/LoginPage" onclick="logout()"><i class="ion-ios-log-out" style="color: #82ae46;"></i> Logout</a></p>
+            </div>
         </div>
     </div>
 </div>

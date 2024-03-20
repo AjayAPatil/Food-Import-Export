@@ -69,24 +69,28 @@
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item active" id="home-btn"><a href="/Home" class="nav-link">Home</a></li>
                     <li class="nav-item" id="admin-home-btn"><a href="/Admin" class="nav-link">Dashboard</a></li>
-                    <li class="nav-item dropdown" id="admin-btn">
-                        <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Admin</a>
-                        <div class="dropdown-menu" aria-labelledby="dropdown01">
-                            <a class="dropdown-item" href="/Admin/Products">Products</a>
-                            <a class="dropdown-item" href="/Admin/Categories">Categories</a>
-                        </div>
-                    </li>
                     <li class="nav-item" id="shop-btn"><a href="/Shop" class="nav-link">Shop</a></li>
                     <li class="nav-item"><a href="/Home/About" class="nav-link">About</a></li>
                     @* <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li> *@
                     <li class="nav-item"><a href="/Home/Contact" class="nav-link">Contact</a></li>
 
+                    <li class="nav-item dropdown" id="admin-btn" style="display: none;">
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="icon-user-circle" styleuser="color: #82ae46;"></span>  <span id="logged-username-admin" name="logged-username">Admin</span></a>
+                        <div class="dropdown-menu" aria-labelledby="dropdown01">
+                            <a class="dropdown-item" href="/Admin/Products"><i class="icon-shopping-bag" style="color: #0062cc;"></i> Products</a>
+                            <a class="dropdown-item" href="/Admin/Categories"><i class="icon-merge_type" style="color: #0062cc;"></i> Categories</a>
+                            <a class="dropdown-item" href="/Admin/Coupon"><i class="icon-code" style="color: #0062cc;"></i> Coupon</a>
+                            <a class="dropdown-item" href="/User/UserProfile"><i class="icon-user" style="color: #82ae46;"></i> Profile</a>
+                            <a class="dropdown-item" href="/User/LoginPage" onclick="logout()"><i class="ion-ios-log-out" style="color: #82ae46;"></i> Logout</a>
+                        </div>
+                    </li>
                     <li class="nav-item dropdown" id="user-logout-btn" style="display: none;">
-                        <a class="nav-link dropdown-toggle" href="#" id="dropdown03" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="icon-user"></span> <span id="logged-username">User</span></a>
+                        <a class="nav-link dropdown-toggle" href="#" id="dropdown03" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="icon-user"></span> <span id="logged-username" name="logged-username">User</span></a>
                         <div class="dropdown-menu" aria-labelledby="dropdown03">
                             <a class="dropdown-item" href="/Shop/Favourites"><i class="ion-ios-heart" style="color: red;"></i> Favourites</a>
                             <a class="dropdown-item" href="/Shop/Cart"><i class="ion-ios-cart" style="color: #0062cc;"></i> Cart</a>
-                            <a class="dropdown-item" href="/Shop/UserOrders"><i class="ion-ios-order" style="color: #0062cc;"></i> Orders</a>
+                            <a class="dropdown-item" href="/Shop/UserOrders"><i class="icon-shopping-bag" style="color: #0062cc;"></i> Orders</a>
+                            <a class="dropdown-item" href="/User/UserProfile"><i class="icon-user" style="color: #82ae46;"></i> Profile</a>
                             <a class="dropdown-item" href="/User/LoginPage" onclick="logout()"><i class="ion-ios-log-out" style="color: #82ae46;"></i> Logout</a>
                         </div>
                     </li>

@@ -284,5 +284,321 @@ namespace Food.Controllers
             return categoryList;
         }
         #endregion
+
+        #region Coupon 
+        public IActionResult Coupon(string uaction, int? id = null)
+        {
+            List<MasterCouponModel> couponList = GetCoupon(id);
+
+            MasterCouponModel? activeRow = couponList.Where(a => a.IsActive).FirstOrDefault();
+            if (activeRow == null && couponList.Count > 0)
+            {
+                couponList[0].IsActive = true;
+                activeRow = couponList[0];
+            }
+
+            var data = new
+            {
+                Coupons = couponList,
+                CurrentCoupon = uaction == "new" || couponList == null || couponList.Count == 0 ? new MasterCouponModel() : activeRow,
+                Action = string.IsNullOrEmpty(uaction) ? "view" : uaction,
+            };
+            return View("Coupon", data);
+        }
+
+        [HttpPost]
+        public IActionResult SaveCoupon(MasterCouponModel coupon)
+        {
+            ResponseModel response = new();
+
+            if (coupon == null)
+            {
+                response.Status = "error";
+                response.Message = "Coupon data Not Found!";
+                return Ok(response);
+            }
+            else if (string.IsNullOrEmpty(coupon.CouponCode))
+            {
+                response.Status = "error";
+                response.Message = "Please enter Coupon Code";
+                return Ok(response);
+            }
+            else if (coupon.CouponDiscount <= 0)
+            {
+                response.Status = "error";
+                response.Message = "Please enter Discount";
+                return Ok(response);
+            }
+
+            try
+            {
+
+                string query = "";
+                if (coupon.CouponId > 0)
+                {
+                    query = "UPDATE tbl_MasterCoupon SET CouponCode=@CouponCode, CouponDiscount=@CouponDiscount, CreatedBy=@CreatedBy, CreatedOn=@CreatedOn,IsDeleted=@IsDeleted WHERE CouponId=" + coupon.CouponId.ToString();
+                    response.Status = "success";
+                    response.Message = "Updated Successfully";
+                    response.Data = coupon;
+                }
+                else
+                {
+                    coupon.CreatedOn = DateTime.Now;
+                    query = "INSERT INTO tbl_MasterCoupon(CouponCode, CouponDiscount,CreatedBy, CreatedOn, IsDeleted) VALUES (@CouponCode,@CouponDiscount,@CreatedBy,@CreatedOn,@IsDeleted)";
+                    response.Status = "success";
+                    response.Message = "Added Successfully";
+                    response.Data = coupon;
+                }
+                SqlConnection connection = new()
+                {
+                    ConnectionString = _config.GetConnectionString("DefaultConnection")
+                };
+                connection.Open();
+                SqlCommand command = new(query, connection);
+                _ = command.Parameters.AddWithValue("@CouponCode", coupon.CouponCode);
+                _ = command.Parameters.AddWithValue("@CouponDiscount", coupon.CouponDiscount);
+                _ = command.Parameters.AddWithValue("@CreatedBy", coupon.CreatedBy);
+                _ = command.Parameters.AddWithValue("@CreatedOn", coupon.CreatedOn);
+                _ = command.Parameters.AddWithValue("@IsDeleted", coupon.IsDeleted);
+                _ = command.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                response.Status = "error";
+                response.Message = ex.Message + "_" + (ex.InnerException?.Message ?? "");
+            }
+            return Ok(response);
+        }
+
+        public List<MasterCouponModel> GetCoupon(int? id = null)
+        {
+            string query = "select * from tbl_MasterCoupon where isdeleted = 0";
+
+            SqlConnection connection = new()
+            {
+                ConnectionString = _config.GetConnectionString("DefaultConnection")
+            };
+            connection.Open();
+            SqlCommand command = new(query, connection);
+            SqlDataReader reader = command.ExecuteReader();
+
+            List<MasterCouponModel> couponList = new();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    MasterCouponModel coupon = new()
+                    {
+                        CouponId = Convert.ToInt32(reader["CouponId"]),
+                        CouponCode = Convert.ToString(reader["CouponCode"]) ?? "",
+                        CouponDiscount = Convert.ToDecimal(reader["CouponDiscount"]),
+                        CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
+                        CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
+                        IsDeleted = Convert.ToBoolean(reader["IsDeleted"]),
+                        IsActive = Convert.ToInt32(reader["CouponId"]) == id
+                    };
+                    couponList.Add(coupon);
+                }
+            }
+            reader.Close();
+            connection.Close();
+
+            return couponList;
+        }
+
+        public IActionResult VerifyCoupon(string couponCode)
+        {
+			ResponseModel response = new();
+
+			if (string.IsNullOrEmpty(couponCode))
+			{
+				response.Status = "error";
+				response.Message = "Coupon code Not Found!";
+				return Ok(response);
+			}
+			string query = "select top 1 * from tbl_MasterCoupon where isdeleted = 0 and couponCode= @CouponCode" ;
+
+			SqlConnection connection = new()
+			{
+				ConnectionString = _config.GetConnectionString("DefaultConnection")
+			};
+			connection.Open();
+			SqlCommand command = new(query, connection);
+            _ = command.Parameters.AddWithValue("@CouponCode", couponCode);
+			SqlDataReader reader = command.ExecuteReader();
+
+            MasterCouponModel coupon = new();
+			if (reader.HasRows)
+			{
+				while (reader.Read())
+				{
+				    coupon = new()
+					{
+						CouponId = Convert.ToInt32(reader["CouponId"]),
+						CouponCode = Convert.ToString(reader["CouponCode"]) ?? "",
+						CouponDiscount = Convert.ToDecimal(reader["CouponDiscount"]),
+						CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
+						CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
+						IsDeleted = Convert.ToBoolean(reader["IsDeleted"])
+					};
+				}
+				response.Status = "success";
+				response.Message = "Coupon applied successfully.";
+                response.Data = coupon;
+			}
+			else
+			{
+				response.Status = "error";
+				response.Message = "Coupon Not Found!";
+			}
+			reader.Close();
+			connection.Close();
+
+			return Ok(response);
+        }
+		#endregion
+
+		#region Users 
+		public IActionResult Users(string uaction, int? id = null)
+        {
+            List<UserModel> userList = GetUsers(id);
+
+            UserModel? activeRow = userList.Where(a => a.IsActive).FirstOrDefault();
+            if (activeRow == null && userList.Count > 0)
+            {
+                userList[0].IsUpdate = true;
+                activeRow = userList[0];
+            }
+
+            var data = new
+            {
+                Users = userList,
+                CurrentUser = uaction == "new" || userList == null || userList.Count == 0 ? new UserModel() : activeRow,
+                Action = string.IsNullOrEmpty(uaction) ? "view" : uaction,
+            };
+            return View("Users", data);
+        }
+
+        [HttpGet]
+        public IActionResult UpdateUsers(string updateaction, int userId)
+        {
+            ResponseModel response = new();
+
+            if (string.IsNullOrEmpty(updateaction))
+            {
+                response.Status = "error";
+                response.Message = "Action Not Found!";
+                return Ok(response);
+            }
+            else if (userId <= 0)
+            {
+                response.Status = "error";
+                response.Message = "User Id no found";
+                return Ok(response);
+            }
+
+            try
+            {
+
+                string query = "";
+                if (userId > 0)
+                {
+                    query = "UPDATE tbl_UserDetails SET IsDeleted=@IsDeleted, IsActive=@IsActive, Password=@Password WHERE UserId=" + userId.ToString();
+                    response.Status = "success";
+                    response.Message = "Updated Successfully";
+                    response.Data = userId;
+                    if(updateaction == "delete")
+                    {
+                        query = "UPDATE tbl_UserDetails SET IsDeleted=1 WHERE UserId=" + userId.ToString();
+                        response.Message = "User Deleted Successfully";
+                    } else if(updateaction == "activate")
+                    {
+                        query = "UPDATE tbl_UserDetails SET IsActive=1 WHERE UserId=" + userId.ToString();
+                        response.Message = "User Activated Successfully";
+                    } else if(updateaction == "deactivate")
+                    {
+                        query = "UPDATE tbl_UserDetails SET IsActive=0 WHERE UserId=" + userId.ToString();
+                        response.Message = "User Deactivated Successfully";
+                    } else if(updateaction == "resetpassword")
+                    {
+                        query = "UPDATE tbl_UserDetails SET Password='Pass@123' WHERE UserId=" + userId.ToString();
+                        response.Message = "Password Reset Successfully. Your new password is \"Pass@123\"";
+                    } else
+                    {
+                        response.Status = "error";
+                        response.Message = "Invalid action..";
+                        response.Data = userId;
+                        return Ok(response);
+                    }
+                    SqlConnection connection = new()
+                    {
+                        ConnectionString = _config.GetConnectionString("DefaultConnection")
+                    };
+                    connection.Open();
+                    SqlCommand command = new(query, connection);
+                    _ = command.ExecuteNonQuery();
+                }
+                else
+                {
+                    response.Status = "error";
+                    response.Message = "User not found";
+                    response.Data = userId;
+                    return Ok(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                response.Status = "error";
+                response.Message = ex.Message + "_" + (ex.InnerException?.Message ?? "");
+            }
+            return Ok(response);
+        }
+
+        public List<UserModel> GetUsers(int? id = null)
+        {
+            string query = "select * from tbl_UserDetails where isdeleted = 0";
+
+            SqlConnection connection = new()
+            {
+                ConnectionString = _config.GetConnectionString("DefaultConnection")
+            };
+            connection.Open();
+            SqlCommand command = new(query, connection);
+            SqlDataReader reader = command.ExecuteReader();
+
+            List<UserModel> userList = new();
+            if (reader.HasRows)
+            {
+                while (reader.Read())
+                {
+                    UserModel user = new()
+                    {
+                        UserId = Convert.ToInt32(reader["UserId"]),
+                        UserName = Convert.ToString(reader["UserName"]) ?? "",
+                        Password = Convert.ToString(reader["Password"]) ?? "",
+                        FirstName = Convert.ToString(reader["FirstName"]) ?? "",
+                        LastName = Convert.ToString(reader["LastName"]) ?? "",
+                        MobileNo = Convert.ToString(reader["MobileNo"]) ?? "",
+                        EmailId = Convert.ToString(reader["EmailId"]) ?? "",
+                        Role = Convert.ToString(reader["Role"]) ?? "",
+                        Address = Convert.ToString(reader["Address"]) ?? "",
+                        City = Convert.ToString(reader["City"]) ?? "",
+                        Gender = Convert.ToString(reader["Gender"]) ?? "",
+                        PinCode = Convert.ToString(reader["PinCode"]) ?? "",
+                        CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
+                        IsDeleted = Convert.ToBoolean(reader["IsDeleted"]),
+                        IsActive = Convert.ToBoolean(reader["IsActive"]),
+                        
+                        IsUpdate = Convert.ToInt32(reader["UserId"]) == id
+                    };
+                    userList.Add(user);
+                }
+            }
+            reader.Close();
+            connection.Close();
+
+            return userList;
+        }
+        #endregion
     }
 }

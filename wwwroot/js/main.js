@@ -355,6 +355,7 @@ function onloadPage() {
     var admnhome = document.getElementById('admin-home-btn');
     var shop = document.getElementById('shop-btn');
     var usrName = document.getElementById('logged-username');
+    var usrNameLst = document.getElementsByName('logged-username');
 
     lin.style.display = 'block';
     lout.style.display = 'none';
@@ -368,8 +369,8 @@ function onloadPage() {
 
         if (user) {
             usrName.innerHTML = user.userName;
+            usrNameLst.forEach(u => u.innerHTML = user.userName);
             lin.style.display = 'none'
-            lout.style.display = 'block'
 
             if (user.role == 'Admin') {
                 admn.style.display = 'block';
@@ -377,6 +378,7 @@ function onloadPage() {
                 home.style.display = 'none';
                 shop.style.display = 'none';
             } else {
+                lout.style.display = 'block'
                 shop.style.display = 'block';
             }
         }
@@ -543,6 +545,7 @@ function setFoodModalContent(htmlContent, showSaveButton = false, design = '') {
     } else {
         document.getElementById('modal-body').innerHTML = htmlContent;
     }
+    return document.getElementById('modal-save-btn');
 }
 function openFoodModal() {
     document.getElementById('launch-modal-btn').click();

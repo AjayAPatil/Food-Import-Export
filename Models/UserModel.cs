@@ -23,5 +23,6 @@ namespace Food.Models
         public string? Address { get; set; }
         public string? City { get; set; }
         public string? PinCode { get; set; }
+        public bool IsUpdate { get; set; }
     }
 }

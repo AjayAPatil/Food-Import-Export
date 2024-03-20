@@ -53,13 +53,15 @@
 					<form action="#" class="info">
 						<div class="form-group">
 							<label for="">Coupon code</label>
-							<input type="text" class="form-control text-left px-3" placeholder="">
+							<input type="text" id="coupon-code" class="form-control text-left px-3" placeholder="">
 						</div>
 					</form>
 				</div>
-				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Apply Coupon</a></p>
+				 <p>
+					<button type="button" onclick="applyCoupon()" id="btn-apply-coupon" class="btn btn-primary py-3 px-4" style="color: white !important;">Apply Coupon</button>
+                </p>
 			</div>
-			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+			<div class="col-lg-4 mt-5 cart-wrap ftco-animate" hidden>
 				<div class="cart-total mb-3">
 					<h3>Estimate shipping and tax</h3>
 					<p>Enter your destination to get a shipping estimate</p>
@@ -85,23 +87,29 @@
 					<h3>Cart Totals</h3>
 					<p class="d-flex">
 						<span>Subtotal</span>
-						<span>$20.60</span>
+						<span id="sub-total-price">0</span>
 					</p>
 					<p class="d-flex">
 						<span>Delivery</span>
-						<span>$0.00</span>
+						<span>₹0</span>
 					</p>
 					<p class="d-flex">
 						<span>Discount</span>
-						<span>$3.00</span>
+						<span id="discount">0</span>
+					</p>
+					<p class="d-flex">
+						<span>Coupon Discount</span>
+						<span id="coupon-discount">0</span>
 					</p>
 					<hr>
 					<p class="d-flex total-price">
 						<span>Total</span>
-						<span>$17.60</span>
+						<span id="total-price">0</span>
 					</p>
 				</div>
-				<p><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+			</div>
+			<div class="col-lg-4 mt-5 cart-wrap ftco-animate">
+				<p><a href="javascript:;" onclick="orderItem()" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
 			</div>
 		</div>
 	</div>
@@ -143,6 +151,7 @@
 	}
 
 	let FavouritesList = [];
+	let totamt = 0;
 	function getUserProducts(userId) {
 		$.get("/Shop/GetUserProducts?userid=" + userId + "&productSavedAs=Cart")
 			.done(function (res) {
@@ -150,8 +159,12 @@
 				if (res?.status == "success") {
 					var prodTblRow = document.getElementById("tbl-prod-body");
 					var htmlData = "";
+					var amt = 0;
+					var saleamt = 0;
 					res.data.forEach((row, id) => {
 						FavouritesList.push({ id: id, prodId: row.product.productId });
+						amt = amt + row.product.mrPrice;
+						saleamt = saleamt + row.product.salePrice;
 						htmlData += `
 								<tr class="text-center" id="tbl-prod-row-` + id + `">
 									<td class="product-remove"><a href="javascript:;" onclick="removeFromCart(` + row.product.productId + `)" title="Remove from cart"><span class="ion-ios-close"></span></a></td>
@@ -184,6 +197,10 @@
 									</tr><!-- END TR-->`;
 					});
 					prodTblRow.innerHTML = htmlData;
+					document.getElementById('sub-total-price').innerHTML = '₹' + amt;
+					document.getElementById('discount').innerHTML = '₹' + (amt - saleamt);
+					totamt = amt - (amt - saleamt);
+					document.getElementById('total-price').innerHTML = '₹' + totamt;
 				}
 			})
 			.fail(function () {
@@ -225,13 +242,47 @@
 		}
 	}
 
+	let coupon = {};
+	function applyCoupon() {
+		let cpc = $('#coupon-code').val();
+		if(!cpc) {
+			showErrorMsg('Enter Coupon Code')
+			return;
+		}
+
+		$.get("/Admin/VerifyCoupon?couponCode=" + cpc)
+			.done(function (res) {
+				console.log(JSON.stringify(res))
+				if (res?.status == "success") {
+					showSuccessMsg(res.message);
+					$('#btn-apply-coupon').attr('disabled', 'disabled');
+					$('#coupon-code').attr('disabled', 'disabled');
+					coupon = res?.data;
+
+					let cpd = totamt * res?.data?.couponDiscount / 100;
+					document.getElementById('coupon-discount').innerHTML = '₹' + cpd;
+					totamt = (totamt - cpd);
+					document.getElementById('total-price').innerHTML = '₹' + totamt;
+
+				} else if (res?.status) {
+					showErrorMsg(res.message);
+				} else {
+					showErrorMsg("error");
+				}
+			})
+			.fail(function () {
+				showErrorMsg("error!");
+			});
+
+	}
 
 	function orderItem() {
 		let prod = [];
 		FavouritesList.forEach(row => {
 			prod.push({
 				ProductId: row.prodId,
-				quantity: $('#quantity' + row.id).val()
+				quantity: $('#quantity' + row.id).val(),
+				Coupon: coupon
 			})
 		})
 		window.location.href = '/Shop/OrderProduct?products=' + JSON.stringify(prod);

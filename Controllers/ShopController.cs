@@ -71,7 +71,7 @@ namespace Food.Controllers
                 return response;
             }
 
-            string query = "select p.ProductId, p.ProductName, p.Images, p.Description, p.SalePrice, up.SavedAs, up.CreatedBy, p.AvailableQuantity, p.AvailableQuantityUnit " +
+            string query = "select p.ProductId, p.ProductName, p.Images, p.Description, p.MRPrice, p.SalePrice, up.SavedAs, up.CreatedBy, p.AvailableQuantity, p.AvailableQuantityUnit " +
                 "from tbl_userproducts as up join tbl_products p on up.ProductId = p.ProductId " +
                 "where up.IsDeleted = 0 and up.CreatedBy = @CreatedBy";
 
@@ -106,6 +106,7 @@ namespace Food.Controllers
                             ProductName = Convert.ToString(reader["ProductName"]) ?? "",
                             Images = reader["Images"] == null || reader["Images"] == DBNull.Value ? Array.Empty<byte>() : (byte[])reader["Images"],
                             Description = Convert.ToString(reader["Description"]) ?? "",
+                            MRPrice = Convert.ToDecimal(reader["MRPrice"]),
                             SalePrice = Convert.ToDecimal(reader["SalePrice"]),
                             AvailableQuantity = reader["AvailableQuantity"] != DBNull.Value ? Convert.ToInt32(reader["AvailableQuantity"]) : null,
                             AvailableQuantityUnit = reader["AvailableQuantityUnit"] != DBNull.Value ? Convert.ToString(reader["AvailableQuantityUnit"]) : null,
@@ -294,7 +295,7 @@ namespace Food.Controllers
             SqlDataReader reader = command.ExecuteReader();
 
             List<ProductOrdersModel> productList = new List<ProductOrdersModel>();
-            decimal Total = 0M, Discount = 0M;
+            decimal Total = 0M, Discount = 0M, CouponDiscount = 0M;
             if (reader.HasRows)
             {
                 while (reader.Read())
@@ -321,17 +322,25 @@ namespace Food.Controllers
 						MrpAmount = currentProduct.Quantity * product.MRPrice,
                         Amount = currentProduct.Quantity * product.SalePrice,
                         Product = product,
+                        Coupon = currentProduct.Coupon,
+                        CouponId = currentProduct.Coupon?.CouponId 
                     });
                     Discount = Discount + ((product.MRPrice - product.SalePrice) * currentProduct.Quantity);
-                    Total += (product.SalePrice * currentProduct.Quantity);
-                }
-            }
+					Total += (product.SalePrice * currentProduct.Quantity);
+				}
+				var cp = currentProductList.Select(a => a.Coupon).FirstOrDefault();
+				if (cp != null)
+				{
+                    CouponDiscount = Total * cp.CouponDiscount / 100;
+                    Total -= CouponDiscount;
+				}
+			}
 
             if (productList.Count <= 0)
             {
                 return Index();
             }
-            return View("OrderProduct", new { productList, Discount, Total });
+            return View("OrderProduct", new { productList, Discount, CouponDiscount, Total });
         }
 
         public IActionResult Favourites()
@@ -396,10 +405,11 @@ namespace Food.Controllers
                                 orders.ProductOrders[p].Amount,
                                 orders.ProductOrders[p].CreatedBy,
                                 orders.ProductOrders[p].CreatedOn,
+                                CouponId = orders.ProductOrders[p].CouponId == null ? "null" : orders.ProductOrders[p].CouponId.ToString(),
                                 IsDeleted = orders.ProductOrders[p].IsDeleted ? "1" : "0"
                             };
-                            query += "\r\nINSERT INTO [dbo].[tbl_ProductOrders] ([OrderId],[ProductId],[Quantity],[QuantityUnit],[Amount],[CreatedBy],[CreatedOn],[IsDeleted])" +
-                            "\r\nVALUES ((SELECT TOP 1 newKey FROM @id), " + currP.ProductId + ", " + currP.Quantity + ", '" + currP.QuantityUnit + "', " + currP.Amount + ", @CreatedBy, @CreatedOn, @IsDeleted)";
+                            query += "\r\nINSERT INTO [dbo].[tbl_ProductOrders] ([OrderId],[ProductId],[Quantity],[QuantityUnit],[Amount],[CreatedBy],[CreatedOn],[IsDeleted],[CouponId])" +
+                            "\r\nVALUES ((SELECT TOP 1 newKey FROM @id), " + currP.ProductId + ", " + currP.Quantity + ", '" + currP.QuantityUnit + "', " + currP.Amount + ", @CreatedBy, @CreatedOn, @IsDeleted," + currP.CouponId + ")";
                         }
                     }
                     else

@@ -241,6 +241,11 @@
                                 <span></span>
                                 <span>- ₹@Model.Discount</span>
                             </p>
+                            <p class="d-flex">
+                                <span style="width: 100%;">Coupon Discount</span>
+                                <span></span>
+                                <span>- ₹@Model.CouponDiscount</span>
+                            </p>
                             <hr>
                             <p class="d-flex total-price">
                                 <span>Total</span>
@@ -526,12 +531,12 @@
                     MrpAmount: p.mrpAmount,
                     CreatedBy: userdata.userId,
                     CreatedOn: new Date(),
-                    IsDeleted: false
+                    IsDeleted: false,
+                    CouponId: p.couponId
                 });
             })
 
             console.log(data);
-            setTimeout(function () { showInfoMsg('Development is in progress.........'); }, 1000)
             placeOrderAPI(data);
 
         } else {

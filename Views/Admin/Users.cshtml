@@ -1,0 +1,103 @@
+﻿@{
+    ViewData["Title"] = "Users List";
+}
+
+<section class="ftco-section ftco-no-pb ftco-no-pt bg-light">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12">
+                <h2 class="m-4" style="width: 100%; text-align: center; font-weight: 600;">User List</h2>
+            </div>
+            <div class="col-md-12 d-flex mb-5">
+                <div class="cart-detail cart-total p-3 p-md-4" style="overflow:auto;">
+                    <table class="tbl-admin-users">
+                        <tr>
+                            <th style="font-weight: bold;" class="tbl-admin-users-action">Action</th>
+                            <th style="font-weight: bold;">User Name</th>
+                            <th style="font-weight: bold;">Name</th>
+                            <th style="font-weight: bold;">Mobile No</th>
+                            <th style="font-weight: bold;">Email Id</th>
+                            <th style="font-weight: bold;">Role</th>
+                            <th style="font-weight: bold;">Address</th>
+                            <th style="font-weight: bold;">City</th>
+                            <th style="font-weight: bold;">Gender</th>
+                            <th style="font-weight: bold;">Pin Code</th>
+                            <th style="font-weight: bold;">Created On</th>
+                        </tr>
+                        @for (int i = 0; i < Model.Users.Count; i++)
+                        {
+                            <tr>
+                                <td class="tbl-admin-users-action">
+                                    <p class="d-flex">
+                                        <span class="btn btn-link food-tooltip" style="padding: 2px; @(@Model.Users[i].Role == "Admin" ? "display:none;" : "")" @(@Model.Users[i].IsActive != true ? "hidden" : "") onclick="updateUser('deactivate',@Model.Users[i].UserId)">
+                                            <i class="icon-user-times"></i>
+                                            <span class="food-tooltiptext">Deactivate User</span>
+                                        </span>
+                                        <span class="btn btn-link food-tooltip" style="padding: 2px; @(@Model.Users[i].Role == "Admin" ? "display:none;" : "")" @(@Model.Users[i].IsActive != true ? "" : "hidden") onclick="updateUser('activate',@Model.Users[i].UserId)">
+                                            <i class="icon-user"></i><i class="icon-check"></i>
+                                            <span class="food-tooltiptext">Activate User</span>
+                                        </span>
+                                        <span class="btn btn-link food-tooltip" style="padding: 2px;" onclick="updateUser('resetpassword',@Model.Users[i].UserId)">
+                                            <i class="icon-user-secret"></i>
+                                            <span class="food-tooltiptext">Reset User Password</span>
+                                        </span>
+                                        <span class="btn btn-link food-tooltip" style="padding: 2px; @(@Model.Users[i].Role == "Admin" ? "display:none;" : "")" onclick="updateUser('delete',@Model.Users[i].UserId)">
+                                            <i class="icon-delete_forever" style="color: #f44336;"></i>
+                                            <span class="food-tooltiptext">Delete User</span>
+                                        </span>
+                                    </p>
+                                </td>
+                                <td>@Model.Users[i].UserName</td>
+                                <td>@Model.Users[i].FirstName @Model.Users[i].LastName</td>
+                                <td>@Model.Users[i].MobileNo</td>
+                                <td>@Model.Users[i].EmailId</td>
+                                <td>@Model.Users[i].Role</td>
+                                <td>@Model.Users[i].Address</td>
+                                <td>@Model.Users[i].City</td>
+                                <td>@Model.Users[i].Gender</td>
+                                <td>@Model.Users[i].PinCode</td>
+                                <td>@Model.Users[i].CreatedOn?.ToString("dd-MMM-yyyy")</td>
+                            </tr>
+                        }
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+
+    setTimeout(function () {
+        var user = localStorage.getItem("UserInfo");
+        if (user) {
+            var userdata = JSON.parse(user);
+            if (userdata.role != "Admin") {
+                location.href = "User/LoginPage";
+            }
+        } else {
+            location.href = "User/LoginPage";
+        }
+    }, 100);
+
+    function updateUser(action, userId) {
+
+        $.get("/Admin/UpdateUsers?updateaction=" + action + "&userId=" + userId)
+            .done(function (res) {
+                if (res?.status == "success") {
+                    showSuccessMsg(res.message);
+
+                    if (action != "resetpassword") {
+                        setTimeout(location.reload(), 1000);
+                    }
+                } else if (res?.status) {
+                    showErrorMsg(res.message);
+                } else {
+                    showErrorMsg("error");
+                }
+            })
+            .fail(function () {
+                showErrorMsg("error");
+            });
+    }
+</script>

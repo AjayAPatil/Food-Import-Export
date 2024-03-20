@@ -23,6 +23,7 @@
         public int ProductOrderId { get; set; }
         public int OrderId { get; set; }
         public int ProductId { get; set; }
+        public int? CouponId { get; set; }
         public int Quantity { get; set; }
         public string QuantityUnit { get; set; }
         public decimal MrpAmount { get; set; }
@@ -31,5 +32,6 @@
         public DateTime CreatedOn { get; set; }
         public bool IsDeleted { get; set; }
         public ProductModel? Product { get; set; }
+        public MasterCouponModel? Coupon { get; set; }
     }
 }
