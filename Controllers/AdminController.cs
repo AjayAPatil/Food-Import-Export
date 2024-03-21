@@ -336,7 +336,19 @@ namespace Food.Controllers
                 string query = "";
                 if (coupon.CouponId > 0)
                 {
-                    query = "UPDATE tbl_MasterCoupon SET CouponCode=@CouponCode, CouponDiscount=@CouponDiscount, CreatedBy=@CreatedBy, CreatedOn=@CreatedOn,IsDeleted=@IsDeleted WHERE CouponId=" + coupon.CouponId.ToString();
+                    query = "UPDATE tbl_MasterCoupon SET CouponCode=@CouponCode, CouponDiscount=@CouponDiscount, IsDeleted=@IsDeleted WHERE CouponId=" + coupon.CouponId.ToString();
+
+                    SqlConnection connection = new()
+                    {
+                        ConnectionString = _config.GetConnectionString("DefaultConnection")
+                    };
+                    connection.Open();
+                    SqlCommand command = new(query, connection);
+                    _ = command.Parameters.AddWithValue("@CouponCode", coupon.CouponCode);
+                    _ = command.Parameters.AddWithValue("@CouponDiscount", coupon.CouponDiscount);
+                    _ = command.Parameters.AddWithValue("@IsDeleted", coupon.IsDeleted);
+                    _ = command.ExecuteNonQuery();
+
                     response.Status = "success";
                     response.Message = "Updated Successfully";
                     response.Data = coupon;
@@ -345,22 +357,24 @@ namespace Food.Controllers
                 {
                     coupon.CreatedOn = DateTime.Now;
                     query = "INSERT INTO tbl_MasterCoupon(CouponCode, CouponDiscount,CreatedBy, CreatedOn, IsDeleted) VALUES (@CouponCode,@CouponDiscount,@CreatedBy,@CreatedOn,@IsDeleted)";
+
+                    SqlConnection connection = new()
+                    {
+                        ConnectionString = _config.GetConnectionString("DefaultConnection")
+                    };
+                    connection.Open();
+                    SqlCommand command = new(query, connection);
+                    _ = command.Parameters.AddWithValue("@CouponCode", coupon.CouponCode);
+                    _ = command.Parameters.AddWithValue("@CouponDiscount", coupon.CouponDiscount);
+                    _ = command.Parameters.AddWithValue("@CreatedBy", coupon.CreatedBy);
+                    _ = command.Parameters.AddWithValue("@CreatedOn", coupon.CreatedOn);
+                    _ = command.Parameters.AddWithValue("@IsDeleted", coupon.IsDeleted);
+                    _ = command.ExecuteNonQuery();
+
                     response.Status = "success";
                     response.Message = "Added Successfully";
                     response.Data = coupon;
                 }
-                SqlConnection connection = new()
-                {
-                    ConnectionString = _config.GetConnectionString("DefaultConnection")
-                };
-                connection.Open();
-                SqlCommand command = new(query, connection);
-                _ = command.Parameters.AddWithValue("@CouponCode", coupon.CouponCode);
-                _ = command.Parameters.AddWithValue("@CouponDiscount", coupon.CouponDiscount);
-                _ = command.Parameters.AddWithValue("@CreatedBy", coupon.CreatedBy);
-                _ = command.Parameters.AddWithValue("@CreatedOn", coupon.CreatedOn);
-                _ = command.Parameters.AddWithValue("@IsDeleted", coupon.IsDeleted);
-                _ = command.ExecuteNonQuery();
             }
             catch (Exception ex)
             {

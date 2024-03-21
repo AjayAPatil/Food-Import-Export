@@ -518,7 +518,11 @@
             data.PaymentMethod = $("input[type='radio'][name='payment-method']:checked").val();
             data.DeliveryDate = formatDate(DeliveryDate);
             data.DeliveryStatus = 'Order Placed';
-            data.ProductOrders = []
+            data.ProductOrders = [];
+
+            let order = @Html.Raw(Json.Serialize(Model.order));
+            data.CouponId = order.couponId;
+            data.Coupon = order.coupon;
 
             let prodLst = @Html.Raw(Json.Serialize(Model.productList));
 
@@ -531,8 +535,7 @@
                     MrpAmount: p.mrpAmount,
                     CreatedBy: userdata.userId,
                     CreatedOn: new Date(),
-                    IsDeleted: false,
-                    CouponId: p.couponId
+                    IsDeleted: false
                 });
             })
 

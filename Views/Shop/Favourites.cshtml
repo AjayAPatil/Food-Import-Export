@@ -177,6 +177,6 @@
 				quantity: $('#quantity' + row.id).val()
 			})
 		})
-		window.location.href = '/Shop/OrderProduct?products=' + JSON.stringify(prod);
+		window.location.href = '/Shop/OrderProduct?inputData=' + JSON.stringify({ ProductOrders: prod });
 	}
 </script>

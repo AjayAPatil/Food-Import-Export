@@ -273,13 +273,14 @@ namespace Food.Controllers
             return View("Product", new { productList = productList, currentProduct = currentProduct });
         }
 
-        public IActionResult OrderProduct(string products = "")
+        public IActionResult OrderProduct(string inputData = "")
         {
-            if (string.IsNullOrEmpty(products))
+            if (string.IsNullOrEmpty(inputData))
             {
                 return Index();
             }
-            var currentProductList = JsonConvert.DeserializeObject<List<ProductOrdersModel>>(products);
+            var order = JsonConvert.DeserializeObject<OrdersModel>(inputData);
+            var currentProductList = order?.ProductOrders;
             if (currentProductList == null || currentProductList.Count <= 0)
             {
                 return Index();
@@ -322,17 +323,19 @@ namespace Food.Controllers
 						MrpAmount = currentProduct.Quantity * product.MRPrice,
                         Amount = currentProduct.Quantity * product.SalePrice,
                         Product = product,
-                        Coupon = currentProduct.Coupon,
-                        CouponId = currentProduct.Coupon?.CouponId 
                     });
                     Discount = Discount + ((product.MRPrice - product.SalePrice) * currentProduct.Quantity);
 					Total += (product.SalePrice * currentProduct.Quantity);
 				}
-				var cp = currentProductList.Select(a => a.Coupon).FirstOrDefault();
-				if (cp != null)
+
+				if (order?.CouponId != null)
 				{
-                    CouponDiscount = Total * cp.CouponDiscount / 100;
-                    Total -= CouponDiscount;
+                    order.Coupon = GetCoupon((int)order.CouponId);
+                    if(order.Coupon != null)
+					{
+						CouponDiscount = Total * order.Coupon.CouponDiscount / 100;
+						Total -= CouponDiscount;
+					}
 				}
 			}
 
@@ -340,10 +343,44 @@ namespace Food.Controllers
             {
                 return Index();
             }
-            return View("OrderProduct", new { productList, Discount, CouponDiscount, Total });
+            return View("OrderProduct", new { productList, Discount, CouponDiscount, Total, order });
         }
 
-        public IActionResult Favourites()
+		private MasterCouponModel GetCoupon(int couponId)
+		{
+			string query = "select * from tbl_MasterCoupon where isdeleted = 0 and CouponId=" + couponId.ToString();
+
+			SqlConnection connection = new()
+			{
+				ConnectionString = _config.GetConnectionString("DefaultConnection")
+			};
+			connection.Open();
+			SqlCommand command = new(query, connection);
+			SqlDataReader reader = command.ExecuteReader();
+
+            MasterCouponModel coupon = new();
+			if (reader.HasRows)
+			{
+				while (reader.Read())
+				{
+					coupon = new()
+					{
+						CouponId = Convert.ToInt32(reader["CouponId"]),
+						CouponCode = Convert.ToString(reader["CouponCode"]) ?? "",
+						CouponDiscount = Convert.ToDecimal(reader["CouponDiscount"]),
+						CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
+						CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
+						IsDeleted = Convert.ToBoolean(reader["IsDeleted"])
+					};
+				}
+			}
+			reader.Close();
+			connection.Close();
+
+			return coupon;
+		}
+
+		public IActionResult Favourites()
         {
             return View();
         }
@@ -389,11 +426,13 @@ namespace Food.Controllers
                 {
                     reader.Close();
                     query = "declare @id TABLE (newKey INT)" +
-                        "\r\ninsert into tbl_Orders([OrderDate],[PaymentMethod],[DeliveryDate],[DeliveryStatus],[MobileNo],[EmailId],[Address],[City],[PinCode],[CreatedBy],[CreatedOn],[IsDeleted])" +
+                        "\r\ninsert into tbl_Orders([OrderDate],[PaymentMethod],[DeliveryDate],[DeliveryStatus],[MobileNo],[EmailId],[Address],[City],[PinCode],[CreatedBy],[CreatedOn],[IsDeleted]" 
+                        + ((orders.CouponId != null) ? "),[CouponId]": "") + ")" +
                         " OUTPUT Inserted.OrderId into @id " +
-                        "values (@OOrderDate,@OPaymentMethod,@ODeliveryDate,@ODeliveryStatus,@OMobileNo, @OEmailId, @OAddress, @OCity, @OPinCode, @CreatedBy, @CreatedOn, @IsDeleted)" +
+                        "values (@OOrderDate,@OPaymentMethod,@ODeliveryDate,@ODeliveryStatus,@OMobileNo, @OEmailId, @OAddress, @OCity, @OPinCode, @CreatedBy, @CreatedOn, @IsDeleted" 
+                        + ((orders.CouponId != null) ? "),@CouponId" : "") + ")" +
                         "\r\n";
-                    if (orders.ProductOrders?.Count > 0)
+                        if (orders.ProductOrders?.Count > 0)
                     {
                         for (int p = 0; p < orders.ProductOrders.Count; p++)
                         {
@@ -405,11 +444,10 @@ namespace Food.Controllers
                                 orders.ProductOrders[p].Amount,
                                 orders.ProductOrders[p].CreatedBy,
                                 orders.ProductOrders[p].CreatedOn,
-                                CouponId = orders.ProductOrders[p].CouponId == null ? "null" : orders.ProductOrders[p].CouponId.ToString(),
                                 IsDeleted = orders.ProductOrders[p].IsDeleted ? "1" : "0"
                             };
-                            query += "\r\nINSERT INTO [dbo].[tbl_ProductOrders] ([OrderId],[ProductId],[Quantity],[QuantityUnit],[Amount],[CreatedBy],[CreatedOn],[IsDeleted],[CouponId])" +
-                            "\r\nVALUES ((SELECT TOP 1 newKey FROM @id), " + currP.ProductId + ", " + currP.Quantity + ", '" + currP.QuantityUnit + "', " + currP.Amount + ", @CreatedBy, @CreatedOn, @IsDeleted," + currP.CouponId + ")";
+                            query += "\r\nINSERT INTO [dbo].[tbl_ProductOrders] ([OrderId],[ProductId],[Quantity],[QuantityUnit],[Amount],[CreatedBy],[CreatedOn],[IsDeleted])" +
+                            "\r\nVALUES ((SELECT TOP 1 newKey FROM @id), " + currP.ProductId + ", " + currP.Quantity + ", '" + currP.QuantityUnit + "', " + currP.Amount + ", @CreatedBy, @CreatedOn, @IsDeleted)";
                         }
                     }
                     else
@@ -433,6 +471,8 @@ namespace Food.Controllers
                     command.Parameters.AddWithValue("@CreatedBy", orders.CreatedBy);
                     command.Parameters.AddWithValue("@CreatedOn", DateTime.Now);
                     command.Parameters.AddWithValue("@IsDeleted", orders.IsDeleted);
+                    if(orders.CouponId != null)
+                    command.Parameters.AddWithValue("@CouponId", orders.CouponId);
                     command.ExecuteNonQuery();
                 }
 
@@ -472,7 +512,7 @@ namespace Food.Controllers
 				"\r\n join tbl_Products p on po.ProductId = p.ProductId" +
 				"\r\n where ISNULL(o.IsDeleted, 0) = 0 and  ISNULL(po.IsDeleted, 0) = 0 and  ISNULL(p.IsDeleted, 0) = 0" +
 				"\r\n and o.CreatedBy = @CreatedBy" +
-				"\r\n order by o.DeliveryDate desc";
+				"\r\n order by o.CreatedOn desc";
 
 			SqlConnection connection = new()
 			{

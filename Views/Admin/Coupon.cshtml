@@ -35,7 +35,7 @@
                     <div class="bg-white p-5 product-form">
                         <div class="row">
                             <div class="form-group col-md-12">
-                                <span style="color:black;">Coupon Code</span>&emsp; <a href="javascript:;" onclick="generateCoupon()"><i class="icon-autorenew"></i> Generate Coupon</a>
+                                <span style="color:black;">Coupon Code</span>&emsp; <a href="javascript:;" onclick="generateCoupon('@Model.Action')"><i class="icon-autorenew"></i> Generate Coupon</a>
                                 <input type="text" @(@Model.Action == "view" ? "disabled" : "") title="Coupon Code" value="@Model.CurrentCoupon?.CouponCode" name="CouponCode" id="CouponCode" class="form-control" placeholder="Enter Coupon Code" />
                             </div>
                             <div class="form-group col-md-12">
@@ -68,7 +68,7 @@
         }
     }, 100);
 
-    function generateCoupon() {
+    function generateCoupon(act) {
         let chrs = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         // chrs += "abcdefghijklmnopqrstuvwxyz";
         chrs += "0123456789";
@@ -79,6 +79,7 @@
             op += chrs.charAt(Math.floor(Math.random() * chrs.length));
         }
 
+        if(act != 'view')
         $("#CouponCode").val(op)
     }
 
@@ -88,6 +89,7 @@
         var data = {
             CouponId: @(@Model.CurrentCoupon?.CouponId != null ? @Model.CurrentCoupon?.CouponId : 0),
             CreatedBy: userdata.userId,
+            CreatedOn: new Date(),
             CouponCode: $('#CouponCode').val(),
             CouponDiscount: $('#CouponDiscount').val(),
             IsDeleted: action == 'delete',

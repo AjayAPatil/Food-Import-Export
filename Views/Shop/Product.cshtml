@@ -266,12 +266,12 @@
     }
 
     function orderItem() {
-        let prod = JSON.stringify([
+        let prod = [
             {
                 ProductId: @Model.currentProduct.ProductId,
                 quantity: $('#quantity').val()
             }
-        ]);
-        window.location.href = '/Shop/OrderProduct?products=' + prod;
+        ];
+        window.location.href = '/Shop/OrderProduct?inputData=' + JSON.stringify({ ProductOrders: prod });
     }
 </script>
