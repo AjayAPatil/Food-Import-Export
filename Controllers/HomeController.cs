@@ -1,7 +1,9 @@
 ﻿using Food.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.Text;
 using Microsoft.Data.SqlClient;
 using System.Diagnostics;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Food.Controllers
 {
@@ -16,9 +18,29 @@ namespace Food.Controllers
             _config = config;
         }
 
+        private void CreateDBIfNotExists()
+		{
+            //get one time script
+            string scriptPath = Directory.GetCurrentDirectory() + "\\DBScripts\\OneTimeScript.sql";
+			if (System.IO.File.Exists(scriptPath))
+			{
+				// Read entire text file content in one string
+				string query = System.IO.File.ReadAllText(scriptPath);
+				SqlConnection connection = new()
+				{
+					ConnectionString = _config.GetConnectionString("DefaultConnection")
+				};
+				connection.Open();
+				SqlCommand command = new(query, connection);
+				_ = command.ExecuteNonQuery();
+			}
+		}
+
         public IActionResult Index()
         {
-            string query = "select * from tbl_Products where isdeleted = 0";
+            CreateDBIfNotExists();
+
+			string query = "select * from tbl_Products where isdeleted = 0";
 
             SqlConnection connection = new()
             {

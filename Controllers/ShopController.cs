@@ -427,10 +427,10 @@ namespace Food.Controllers
                     reader.Close();
                     query = "declare @id TABLE (newKey INT)" +
                         "\r\ninsert into tbl_Orders([OrderDate],[PaymentMethod],[DeliveryDate],[DeliveryStatus],[MobileNo],[EmailId],[Address],[City],[PinCode],[CreatedBy],[CreatedOn],[IsDeleted]" 
-                        + ((orders.CouponId != null) ? "),[CouponId]": "") + ")" +
+                        + ((orders.CouponId != null) ? ",[CouponId]": "") + ")" +
                         " OUTPUT Inserted.OrderId into @id " +
                         "values (@OOrderDate,@OPaymentMethod,@ODeliveryDate,@ODeliveryStatus,@OMobileNo, @OEmailId, @OAddress, @OCity, @OPinCode, @CreatedBy, @CreatedOn, @IsDeleted" 
-                        + ((orders.CouponId != null) ? "),@CouponId" : "") + ")" +
+                        + ((orders.CouponId != null) ? ",@CouponId" : "") + ")" +
                         "\r\n";
                         if (orders.ProductOrders?.Count > 0)
                     {

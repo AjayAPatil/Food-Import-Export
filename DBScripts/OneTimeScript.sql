@@ -15,10 +15,10 @@ IF NOT EXISTS(SELECT * FROM sys.databases WHERE name = 'food')
 BEGIN
 	CREATE DATABASE [food]
 END
-GO
+--GO
 
-USE [food]
-GO
+USE [food];
+--GO
 
 --TABLE tbl_UserDetails
 IF NOT EXISTS (SELECT * FROM sysobjects WHERE name='tbl_UserDetails' and xtype='U')
@@ -401,4 +401,4 @@ BEGIN
 	ALTER TABLE tbl_Orders ADD CouponId INT FOREIGN KEY REFERENCES tbl_MasterCoupon(CouponId) NULL
 END
 
-GO
+--GO

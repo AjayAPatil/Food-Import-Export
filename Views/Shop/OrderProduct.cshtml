@@ -241,7 +241,7 @@
                                 <span></span>
                                 <span>- ₹@Model.Discount</span>
                             </p>
-                            <p class="d-flex">
+                            <p class="d-flex" style="@(@Model.CouponDiscount > 0 ? "" : "display:none !important;")">
                                 <span style="width: 100%;">Coupon Discount</span>
                                 <span></span>
                                 <span>- ₹@Model.CouponDiscount</span>

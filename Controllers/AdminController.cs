@@ -420,7 +420,7 @@ namespace Food.Controllers
             return couponList;
         }
 
-        public IActionResult VerifyCoupon(string couponCode)
+        public IActionResult VerifyCoupon(string couponCode, int userId)
         {
 			ResponseModel response = new();
 
@@ -430,7 +430,10 @@ namespace Food.Controllers
 				response.Message = "Coupon code Not Found!";
 				return Ok(response);
 			}
-			string query = "select top 1 * from tbl_MasterCoupon where isdeleted = 0 and couponCode= @CouponCode" ;
+			string query = "select top 1 " +
+                "isnull((select top 1 o.OrderId from tbl_Orders o where o.CreatedBy = @CreatedBy and o.CouponId = ISNULL(c.CouponId, 0)), 0) as OrderId," +
+				" c.*" +
+                " from tbl_MasterCoupon c where isdeleted = 0 and couponCode= @CouponCode";
 
 			SqlConnection connection = new()
 			{
@@ -438,7 +441,8 @@ namespace Food.Controllers
 			};
 			connection.Open();
 			SqlCommand command = new(query, connection);
-            _ = command.Parameters.AddWithValue("@CouponCode", couponCode);
+			_ = command.Parameters.AddWithValue("@CouponCode", couponCode);
+			_ = command.Parameters.AddWithValue("@CreatedBy", userId);
 			SqlDataReader reader = command.ExecuteReader();
 
             MasterCouponModel coupon = new();
@@ -446,15 +450,23 @@ namespace Food.Controllers
 			{
 				while (reader.Read())
 				{
-				    coupon = new()
-					{
-						CouponId = Convert.ToInt32(reader["CouponId"]),
-						CouponCode = Convert.ToString(reader["CouponCode"]) ?? "",
-						CouponDiscount = Convert.ToDecimal(reader["CouponDiscount"]),
-						CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
-						CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
-						IsDeleted = Convert.ToBoolean(reader["IsDeleted"])
-					};
+                    if (Convert.ToInt32(reader["OrderId"]) > 0)
+                    {
+                        response.Status = "error";
+                        response.Message = "Coupon Already Used!";
+                    }
+                    else
+                    {
+                        coupon = new()
+                        {
+                            CouponId = Convert.ToInt32(reader["CouponId"]),
+                            CouponCode = Convert.ToString(reader["CouponCode"]) ?? "",
+                            CouponDiscount = Convert.ToDecimal(reader["CouponDiscount"]),
+                            CreatedBy = Convert.ToInt32(reader["CreatedBy"]),
+                            CreatedOn = Convert.ToDateTime(reader["CreatedOn"]),
+                            IsDeleted = Convert.ToBoolean(reader["IsDeleted"])
+                        };
+                    }
 				}
 				response.Status = "success";
 				response.Message = "Coupon applied successfully.";

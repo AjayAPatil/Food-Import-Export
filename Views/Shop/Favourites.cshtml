@@ -60,10 +60,11 @@
 			$('#' + id).val(inputVal.replace(/\D/gm, ""));
 			updateTotalPrice($('#' + id).val(), rowno);
 		}
+		changeNumber('', id, rowno);
 	}
 	function changeNumber(action, id, rowno) {
 		let inputval = Number($('#' + id).val());
-		let newval = inputval + ((action == 'minus') ? -1 : 1);
+		let newval = inputval + ((action == 'minus') ? -1 : (action == 'plus') ? 1 : 0);
 		newval = newval < 1 ? 1 : newval;
 		$('#' + id).val(newval);
 		updateTotalPrice(newval, rowno);

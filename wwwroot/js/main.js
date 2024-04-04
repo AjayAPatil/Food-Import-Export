@@ -347,6 +347,7 @@ AOS.init({
 
 window.onload = onloadPage
 
+
 function onloadPage() {
     var lin = document.getElementById('user-login-btn');
     var lout = document.getElementById('user-logout-btn');
@@ -383,6 +384,37 @@ function onloadPage() {
             }
         }
     }
+
+    let bkcolr = '#00000045';
+    [
+        { id: 'home-btn', url: '/Home' },
+        { id: 'admin-home-btn', url: '/Admin' },
+        { id: 'shop-btn', url: '/Shop' },
+        { id: 'about-btn', url: '/Home/About' },
+        { id: 'contact-btn', url: '/Home/Contact' },
+        { id: 'admin-btn', url: '/Admin/Products' },
+        { id: 'admin-btn', url: '/Admin/Categories' },
+        { id: 'admin-btn', url: '/Admin/Coupon' },
+        { id: 'admin-btn', url: '/User/UserProfile' },
+        { id: 'admin-btn', url: '/User/LoginPage' },
+        { id: 'user-logout-btn', url: '/Shop/Favourites' },
+        { id: 'user-logout-btn', url: '/Shop/Cart' },
+        { id: 'user-logout-btn', url: '/Shop/UserOrders' },
+        { id: 'user-logout-btn', url: '/User/UserProfile' },
+        { id: 'user-logout-btn', url: '/User/LoginPage' },
+        { id: 'user-login-btn', url: '/User/LoginPage' },
+    ].forEach(menu => {
+        let ele = document.getElementById(menu.id);
+        if (window.location.pathname == menu.url) {
+            ele.style.backgroundColor = bkcolr;
+        } else {
+            ele.style.backgroundColor = '';
+        }
+    });
+
+    Notification.requestPermission().then(function (permission) {
+            console.log(permission);
+        });
 }
 
 function logout() {
