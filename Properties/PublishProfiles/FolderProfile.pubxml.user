@@ -5,7 +5,7 @@ https://go.microsoft.com/fwlink/?LinkID=208121.
 <Project>
   <PropertyGroup>
     <_PublishTargetUrl>C:\All in one\Food Tech\Food\bin\Release\net7.0\publish\</_PublishTargetUrl>
-    <History>True|2024-04-07T15:38:37.8405308Z;True|2024-04-07T21:07:07.2623806+05:30;True|2024-04-07T21:06:11.3851269+05:30;True|2024-03-28T20:13:00.5271648+05:30;True|2024-03-26T21:40:12.9226379+05:30;True|2024-02-24T21:28:09.8118552+05:30;</History>
+    <History>True|2024-04-10T15:41:29.5342574Z;True|2024-04-07T21:08:37.8405308+05:30;True|2024-04-07T21:07:07.2623806+05:30;True|2024-04-07T21:06:11.3851269+05:30;True|2024-03-28T20:13:00.5271648+05:30;True|2024-03-26T21:40:12.9226379+05:30;True|2024-02-24T21:28:09.8118552+05:30;</History>
     <LastFailureDetails />
   </PropertyGroup>
 </Project>

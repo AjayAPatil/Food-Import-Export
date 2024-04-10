@@ -190,7 +190,7 @@ AOS.init({
                         {
                             number: num,
                             numberStep: comma_separator_number_step
-                        }, 7000
+                        }, 10000
                     );
                 });
 
@@ -312,9 +312,16 @@ AOS.init({
     goHere();
 
 
+    var dummyETime = new Date();
+    dummyETime.setDate(dummyETime.getDate() + 2);
+    dummyETime.setHours(dummyETime.getHours() + 2);
+    dummyETime.setMinutes(dummyETime.getMinutes() + 2);
+    dummyETime.setSeconds(dummyETime.getSeconds() + 2);
     function makeTimer() {
 
-        var endTime = new Date("21 December 2019 9:56:00 GMT+01:00");
+        var endTime = new Date("21 APR 2024 9:56:00 GMT+01:00");
+        endTime = new Date(dummyETime);
+
         endTime = (Date.parse(endTime) / 1000);
 
         var now = new Date();

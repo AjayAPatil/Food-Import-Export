@@ -14,24 +14,24 @@
     </div>
 </div>
 
-<section class="ftco-section ftco-no-pb ftco-no-pt bg-light">
+<section class="ftco-section ftco-no-pb ftco-no-pt bg-light mt-5">
     <div class="container">
         <div class="row">
-            <div class="col-md-5 p-md-5 img img-2 d-flex justify-content-center align-items-center" style="background-image: url(/images/about.jpg);">
-                <a href="https://vimeo.com/45830194" class="icon popup-vimeo d-flex justify-content-center align-items-center">
+            <div class="col-md-5 p-md-5  img-2 d-flex justify-content-center align-items-center" style="background-image: url(/images/about.jpg);">
+                @* <a href="javascript:;" class="icon popup-vimeo d-flex justify-content-center align-items-center">
                     <span class="icon-play"></span>
-                </a>
+                </a> *@
             </div>
             <div class="col-md-7 py-5 wrap-about pb-md-5 ftco-animate">
                 <div class="heading-section-bold mb-4 mt-md-5">
                     <div class="ml-md-0">
-                        <h2 class="mb-4">Welcome to Vegefoods an eCommerce website</h2>
+                        <h2 class="mb-4">Our Company</h2>
                     </div>
                 </div>
                 <div class="pb-md-5">
-                    <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
-                    <p>But nothing the copy said could convince her and so it didn’t take long until a few insidious Copy Writers ambushed her, made her drunk with Longe and Parole and dragged her into their agency, where they abused her for their.</p>
-                    <p><a href="#" class="btn btn-primary">Shop now</a></p>
+                    <p>Shivray International, is an emerging Fresh Produce Export Company with strong commitment to quality and customer satisfaction. We have an integrated supply chain to deliver the best.</p>
+                    <p>Established in 2020 by Shubhangi Arun Koge, Shivray International has rapidly grown into a market leader in the fresh Fruits and Jaggery Export sector by providing excellence in service and results to Both customers and producers.</p>
+                    <p><a href="/Shop" class="btn btn-primary">Shop now</a></p>
                 </div>
             </div>
         </div>
@@ -46,10 +46,10 @@
                 <span>Get e-mail updates about our latest shops and special offers</span>
             </div>
             <div class="col-md-6 d-flex align-items-center">
-                <form action="#" class="subscribe-form">
+                <form action="" class="subscribe-form">
                     <div class="form-group d-flex">
                         <input type="text" class="form-control" placeholder="Enter email address">
-                        <input type="submit" value="Subscribe" class="submit px-3">
+                        <input type="button" value="Subscribe" class="submit px-3">
                     </div>
                 </form>
             </div>
@@ -103,13 +103,25 @@
 <section class="ftco-section testimony-section">
     <div class="container">
         <div class="row justify-content-center mb-5 pb-3">
-            <div class="col-md-7 heading-section ftco-animate text-center">
-                <span class="subheading">Testimony</span>
+            <div class="col-md-12 heading-section ftco-animate text-center">
+                @* <span class="subheading">Testimony</span> *@
+                <span class="subheading"> </span>
                 <h2 class="mb-4">Our satisfied customer says</h2>
-                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in</p>
+            </div>
+            <div class="col-md-12 heading-section ftco-animate">
+                @for (int r = 0; r < Model.Reviews.Count; r++)
+                {
+                    <p>@Model.Reviews[r].CustomerName - 
+                        @for (int rc = 0; rc < Model.Reviews[r].RatingGiven; rc++)
+                        {
+                            <span>⭐</span>
+                        }
+                        “@Model.Reviews[r].Remark”
+                   </p>
+                }
             </div>
         </div>
-        <div class="row ftco-animate">
+@*         <div class="row ftco-animate">
             <div class="col-md-12">
                 <div class="carousel-testimony owl-carousel">
                     <div class="item">
@@ -184,7 +196,7 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> *@
     </div>
 </section>
 
@@ -198,7 +210,7 @@
                     </div>
                     <div class="media-body">
                         <h3 class="heading">Free Shipping</h3>
-                        <span>On order over $100</span>
+                        <span>On order over ₹500</span>
                     </div>
                 </div>
             </div>
